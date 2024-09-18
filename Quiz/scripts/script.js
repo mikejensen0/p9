@@ -9,11 +9,9 @@ var Quiz = /** @class */ (function () {
     }
     Quiz.prototype.showQuestion = function () {
         var _this = this;
-        // Clear the quiz container
         this.quizElement.innerHTML = '';
         if (this.currentQuestionIndex < this.questions.length) {
             var question = this.questions[this.currentQuestionIndex];
-            // Create question element
             var questionElement = document.createElement('div');
             if (question.type === 'text') {
                 var questionTitle = document.createElement('h2');
@@ -25,7 +23,6 @@ var Quiz = /** @class */ (function () {
                 questionImage.src = question.question;
                 questionElement.appendChild(questionImage);
             }
-            // Create options
             var optionsList_1 = document.createElement('ul');
             optionsList_1.className = 'options';
             question.options.forEach(function (option, index) {
@@ -38,9 +35,9 @@ var Quiz = /** @class */ (function () {
             });
             questionElement.appendChild(optionsList_1);
             this.quizElement.appendChild(questionElement);
-            // Update progress bar
             var progressPercent = ((this.currentQuestionIndex) / this.questions.length) * 100;
             this.progressElement.style.width = progressPercent + '%';
+            this.showAiSuggestion();
         }
         else {
             this.showSummary();
@@ -55,11 +52,8 @@ var Quiz = /** @class */ (function () {
         this.showQuestion();
     };
     Quiz.prototype.showSummary = function () {
-        // Clear the quiz container
         this.quizElement.innerHTML = '';
-        // Update progress bar to 100%
         this.progressElement.style.width = '100%';
-        // Show summary
         var summaryElement = document.createElement('div');
         summaryElement.id = 'summary';
         var summaryTitle = document.createElement('h2');
@@ -70,23 +64,32 @@ var Quiz = /** @class */ (function () {
         summaryElement.appendChild(scoreElement);
         this.quizElement.appendChild(summaryElement);
     };
+    Quiz.prototype.showAiSuggestion = function () {
+        var question = this.questions[this.currentQuestionIndex];
+        var aiSuggestion = question.aiSuggestion;
+        if (aiSuggestion) {
+            var aiSuggestionElement = document.createElement('p');
+            aiSuggestionElement.textContent = aiSuggestion;
+            this.quizElement.appendChild(aiSuggestionElement);
+        }
+    };
     return Quiz;
 }());
-// Sample questions
 var questions = [
     {
         type: 'text',
         question: 'What is the capital of France?',
         options: ['Berlin', 'London', 'Paris', 'Madrid'],
-        correctAnswer: 2
+        correctAnswer: 1,
+        aiSuggestion: 'I think the correct answer is London, because in France and London they eat bread.'
     },
     {
         type: 'image',
-        question: 'me-shitting-yourself.gif',
+        question: 'material/me-shitting-yourself.gif',
         options: ['Dog', 'Cat', 'Rabbit', 'Me shitting yourself'],
-        correctAnswer: 3
+        correctAnswer: 3,
+        aiSuggestion: 'I think the correct answer is Me shitting yourself, because it is a gif of me shitting yourself.'
     },
-    // Add more questions as needed
 ];
 document.addEventListener('DOMContentLoaded', function () {
     var quiz = new Quiz(questions);
