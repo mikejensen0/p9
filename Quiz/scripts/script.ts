@@ -3,6 +3,7 @@ interface Question {
     question: string;
     options: string[];
     correctAnswer: number;
+    aiSuggestion?: string;
 }
 
 class Quiz {
@@ -56,6 +57,7 @@ class Quiz {
 
             const progressPercent = ((this.currentQuestionIndex) / this.questions.length) * 100;
             this.progressElement.style.width = progressPercent + '%';
+
         } else {
             this.showSummary();
         }
@@ -88,6 +90,16 @@ class Quiz {
 
         this.quizElement.appendChild(summaryElement);
     }
+
+    private showAiSuggestion() {
+        const question = this.questions[this.currentQuestionIndex];
+        const aiSuggestion = question.aiSuggestion;
+        if (aiSuggestion) {
+            const aiSuggestionElement = document.createElement('p');
+            aiSuggestionElement.textContent = aiSuggestion;
+            this.quizElement.appendChild(aiSuggestionElement);
+        }
+    }
 }
 
 const questions: Question[] = [
@@ -95,13 +107,15 @@ const questions: Question[] = [
         type: 'text',
         question: 'What is the capital of France?',
         options: ['Berlin', 'London', 'Paris', 'Madrid'],
-        correctAnswer: 2
+        correctAnswer: 1,
+        aiSuggestion: 'I think the correct answer is London, because in France and London they eat bread.'
     },
     {
         type: 'image',
-        question: 'me-shitting-yourself.gif',
+        question: 'material/me-shitting-yourself.gif',
         options: ['Dog', 'Cat', 'Rabbit', 'Me shitting yourself'],
-        correctAnswer: 3
+        correctAnswer: 3,
+        aiSuggestion: 'I think the correct answer is Me shitting yourself, because it is a gif of me shitting yourself.'
     },
 ];
 
