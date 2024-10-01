@@ -1,0 +1,97 @@
+ /* General page styling */
+ body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    color: #333;
+}
+
+/* Container for the messages and input */
+.container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+/* Header */
+h1 {
+    font-size: 2rem;
+    color: #4a90e2;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Displayed message list styling */
+#displayMessage {
+    overflow-y: auto;
+    flex-grow: 1;
+    margin-bottom: 10px;
+}
+
+#displayMessage p {
+    background: #f0f0f0;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    text-align: left;
+}
+
+/* Input container styling */
+.input-container {
+    display: flex;
+    align-items: center;
+}
+
+/* Input field styling */
+#messageInput {
+    flex-grow: 1;
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+#messageInput:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+/* Button styling */
+button {
+    background-color: #4a90e2;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+    background-color: #3a78c0;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* Styling for response paragraph */
+#postMessageResponse {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: #333;
+}

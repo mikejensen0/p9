@@ -7,7 +7,7 @@ load_dotenv()
 #from flask_cors import CORS
 
 app = Flask(__name__)
-#CORS(app)  # This will enable CORS for all routes
+#CORS(app) 
 genai.configure(api_key=os.getenv("API_KEY", None))
 model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -18,23 +18,16 @@ chat = model.start_chat(
     ]
 )
 
-# Serve the HTML page
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# A simple GET request that returns a message
-@app.route('/get_message', methods=['GET'])
-def get_message():
-    return jsonify({'message': 'hello'})
-
-# Handle POST request from JavaScript
 @app.route('/post_message', methods=['POST'])
 def post_message():
     data = request.json
     received_message = data.get('message')
     response = chat.send_message(received_message)
-    return jsonify({'response': f'Flask received your message: {response.text}'})
+    return jsonify({'response':  response.text})
 
 if __name__ == '__main__':
     app.run(debug=True)

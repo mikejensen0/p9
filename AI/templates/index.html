@@ -4,45 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flask-JS Communication</title>
-    <script>
-        // Function to send GET request to Flask
-        function getMessage() {
-            fetch('/get_message')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('getMessageResponse').innerText = data.message;
-            })
-            .catch(error => console.log('Error:', error));
-        }
-
-        // Function to send POST request to Flask
-        function postMessage() {
-            const messageToSend = document.getElementById('messageInput').value;
-            fetch('/post_message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: messageToSend })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('postMessageResponse').innerText = data.response;
-            })
-            .catch(error => console.log('Error:', error));
-        }
-    </script>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <script src="{{url_for('static', filename='something.js')}}"></script>
 </head>
 <body>
-    <h1>Flask and JavaScript Communication</h1>
-
-    <h2>GET Request</h2>
-    <button onclick="getMessage()">Get Message from Flask</button>
-    <p id="getMessageResponse"></p>
-
-    <h2>POST Request</h2>
-    <input type="text" id="messageInput" placeholder="Enter a message">
-    <button onclick="postMessage()">Send Message to Flask</button>
-    <p id="postMessageResponse"></p>
+    <body>
+        <div class="container">
+            <h1>EBIC PROTOTYPE</h1>
+            <div id="displayMessage"></div>
+            <div class="input-container">
+                <input type="text" id="messageInput" placeholder="Enter a message">
+                <button onclick="postMessage()">Prompt</button>
+            </div>
+        </div>
+   
 </body>
 </html>
