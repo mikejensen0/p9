@@ -10,36 +10,46 @@
     color: #333;
 }
 
-/* Container for the messages and input */
-.container {
+/* Main container for both windows */
+.main-container {
+    display: flex;
+    gap: 20px;
+    width: 90%;
+    max-width: 1200px;
+    height: 80vh;
+}
+
+/* Styling for each window */
+.window {
     background: #fff;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    width: 90%;
-    height: 80vh;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    overflow: hidden;
 }
 
 /* Header */
 h1 {
-    font-size: 2rem;
+    font-size: 1.5rem;
     color: #4a90e2;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     text-align: center;
 }
 
 /* Displayed message list styling */
-#displayMessage {
+#displayMessages {
     overflow-y: auto;
     flex-grow: 1;
     margin-bottom: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 6px;
 }
 
-#displayMessage p {
+#displayMessages p {
     background: #f0f0f0;
     padding: 8px;
     margin-bottom: 5px;
@@ -51,10 +61,11 @@ h1 {
 .input-container {
     display: flex;
     align-items: center;
+    margin-top: 10px;
 }
 
 /* Input field styling */
-#messageInput {
+#messageInput, #bigMessageInput {
     flex-grow: 1;
     padding: 10px;
     margin-right: 10px;
@@ -64,7 +75,7 @@ h1 {
     transition: border-color 0.3s;
 }
 
-#messageInput:focus {
+#messageInput:focus, #bigMessageInput:focus {
     border-color: #4a90e2;
     outline: none;
 }
@@ -89,9 +100,8 @@ button:active {
     transform: scale(0.95);
 }
 
-/* Styling for response paragraph */
-#postMessageResponse {
-    margin-top: 20px;
-    font-size: 1rem;
-    color: #333;
+/* Big text area for the second window */
+#bigMessageInput {
+    height: 200px;
+    resize: vertical;
 }
