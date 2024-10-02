@@ -1,6 +1,28 @@
  // Initialize an empty array to store messages and responses
  let messages = [];
 
+ document.addEventListener("DOMContentLoaded", () => {
+    const savedMessages = localStorage.getItem("chatMessages");
+    if (savedMessages) {
+        messages = JSON.parse(savedMessages);
+        updateMessageList();
+    }
+    
+});
+
+function checkServerStatus() {
+   
+    fetch('/status')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Server is down');
+            }
+        })
+        .catch(error => {
+            localStorage.clear()
+        });
+}
+
  function postMessage() {
      // Get the value from the input field
      const messageToSend = document.getElementById('messageInput').value;
@@ -73,4 +95,7 @@
 
      // Scroll to the bottom of the messages container
      displayMessagesElement.scrollTop = displayMessagesElement.scrollHeight;
+
+     localStorage.setItem("chatMessages", JSON.stringify(messages));
+    setInterval(checkServerStatus, 5000);
  }

@@ -29,5 +29,9 @@ def post_message():
     response = chat.send_message(received_message)
     return jsonify({'response':  response.text})
 
+@app.route('/status', methods=['GET'])
+def status():
+    return jsonify({"status": "running"}), 200
+
 if __name__ == '__main__':
     app.run(debug=True)
