@@ -35,6 +35,9 @@ def submit_code_intermediary():
     # Get the C code from the JavaScript request
     data = request.json
     code = data.get('code')
+    
+    if 'main (' in code or 'main(' in code:
+        return jsonify({"error": "Do not include a main function in your code submission"}), 400
 
     # Send the C code to the Docker container (where Flask API is running)
     docker_url = 'http://localhost:5000/submit_code'  # Docker Flask server URL
