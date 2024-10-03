@@ -1,15 +1,42 @@
  // Initialize an empty array to store messages and responses
  let messages = [];
 
- document.addEventListener("DOMContentLoaded", () => {
     const savedMessages = localStorage.getItem("chatMessages");
     if (savedMessages) {
         messages = JSON.parse(savedMessages);
         updateMessageList();
     }
     
-});
 
+    function resetChat() {
+        fetch('/reset_chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data.message); // Should log "Chat reset successfully."
+          localStorage.clear()
+          location.reload()
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          //alert("Failed to reset chat.");
+        });
+      }
+
+document.getElementById("messageInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter" && event.shiftKey) {
+        
+    } 
+    else if (event.key == "Enter")
+    {
+        event.preventDefault(); // Prevent the default behavior of adding a new line
+        postMessage(); // Call the postMessage function to send the message
+    }
+});
 function checkServerStatus() {
    
     fetch('/status')

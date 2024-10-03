@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flask-JS Communication</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-    <script src="{{url_for('static', filename='something.js')}}"></script>
+   
 </head>
 <body>
     <div class="main-container">
         <!-- Window 1: Chat Window -->
         <div class="window">
             <h1>Ai</h1>
+            
             <div id="displayMessages"></div>
             <div class="input-container">
-                <input type="text" id="messageInput" placeholder="Enter a message">
+                <textarea type="text" id="messageInput" placeholder="Enter a message"></textarea>
                 <button onclick="postMessage()">Send</button>
+                
             </div>
         </div>
 
@@ -23,8 +24,10 @@
         <div class="window">
             <h1>Code</h1>
             <textarea id="bigMessageInput" placeholder="Put your code here once you are ready to submit"></textarea>
-            <button onclick="postBigMessage()">Submit</button>
+            <button onclick="resetChat()">Submit</button>
         </div>
     </div>
 </body>
+<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+<script src="{{url_for('static', filename='something.js')}}"></script>
 </html>

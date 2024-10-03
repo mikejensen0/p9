@@ -18,6 +18,17 @@ chat = model.start_chat(
     ]
 )
 
+@app.route('/reset_chat', methods=['POST'])
+def reset_chat():
+    global chat
+    chat = model.start_chat(
+        history=[
+            {"role": "user", "parts": "You are a coding assistant... (initial instruction)"},
+            {"role": "model", "parts": "Okay, I can do that"},
+        ]
+    )
+    return jsonify({"message": "Chat reset successfully."})
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -27,6 +38,7 @@ def post_message():
     data = request.json
     received_message = data.get('message')
     response = chat.send_message(received_message)
+    
     return jsonify({'response':  response.text})
 
 @app.route('/status', methods=['GET'])
