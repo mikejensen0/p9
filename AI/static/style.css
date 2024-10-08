@@ -93,6 +93,14 @@ button {
     transition: background-color 0.3s, transform 0.3s;
 }
 
+.secondbutton {
+    background-color: red;
+
+}
+
+.secondbutton:hover{
+    background-color: rgb(218, 26, 26);
+}
 button:hover {
     background-color: #3a78c0;
 }
