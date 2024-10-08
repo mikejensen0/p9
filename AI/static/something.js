@@ -7,6 +7,10 @@
         updateMessageList();
     }
     
+    window.addEventListener('beforeunload', function (event) {
+        checkServerStatus();
+      });
+
 
     function resetChat() {
         fetch('/reset_chat', {
@@ -18,7 +22,7 @@
         .then(response => response.json())
         .then(data => {
           console.log(data.message); // Should log "Chat reset successfully."
-          localStorage.clear()
+          localStorage.clear();
           location.reload()
         })
         .catch(error => {
@@ -38,15 +42,16 @@ document.getElementById("messageInput").addEventListener("keypress", function(ev
     }
 });
 function checkServerStatus() {
-   
     fetch('/status')
         .then(response => {
-            if (!response.ok) {
+            if (!response.ok && response.status !== 304) {
                 throw new Error('Server is down');
             }
         })
         .catch(error => {
-            localStorage.clear()
+            console.log(error)
+            localStorage.clear();
+            //location.reload();
         });
 }
 
@@ -124,5 +129,6 @@ function checkServerStatus() {
      displayMessagesElement.scrollTop = displayMessagesElement.scrollHeight;
 
      localStorage.setItem("chatMessages", JSON.stringify(messages));
-    setInterval(checkServerStatus, 5000);
+    //setInterval(checkServerStatus, 5000);
  }
+ //setInterval(checkServerStatus, 5000);
