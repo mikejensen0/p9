@@ -41,11 +41,15 @@ def submit_code_intermediary():
 
     # Send the C code to the Docker container (where Flask API is running)
     docker_url = 'http://localhost:5000/submit_code'  # Docker Flask server URL
-
     response = requests.post(docker_url, json={'code': code})
-
+    
+    if "PASS" in response.text and "0 Failures" in response.text:
+        status = "pass"
+    else:
+        status = "fail"
+        
     # Return the result from the Docker Flask server back to the frontend
-    return jsonify(response.json())
+    return jsonify({"status": status, "details": response.text})
 
 @app.route('/status', methods=['GET'])
 def status():

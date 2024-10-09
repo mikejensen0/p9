@@ -68,8 +68,19 @@ function postBigMessage() {
         // Sending the C code to the Python intermediary server
         axios.post(url, { code: bigMessageToSend })
             .then(response => {
-                // Print the response (test output or errors)
-                console.log(response.data);
+                const result = reponse.data;
+                console.log(result);
+                console.log(result.status);
+
+                const messageInput = document.getElementById("messageInput");
+
+                if (result.status === "pass") {
+                    messageInput.classList.remove('fail');
+                    messageInput.classList.add('pass');
+                } else {
+                    messageInput.classList.remove('pass');
+                    messageInput.classList.add('fail');
+                }
             })
             .catch(error => {
                 // Handle errors
