@@ -24,7 +24,7 @@
     });
 
     function resetChatFromButton(){
-        let userresponse = confirm("This will reset your chat. Proceed?")
+        let userresponse = confirm("This will reset your chat. Proceed?");
         if (userresponse){
             resetChat();
         }
