@@ -63,23 +63,21 @@ function postBigMessage() {
     const url = '/submit_code_intermediary';  // This points to hello.py, not directly to Docker
 
     if (bigMessageToSend.trim() !== "") {
-        console.log("Big message submitted:", bigMessageToSend);
+        console.log("Code submitted:", bigMessageToSend);
 
         // Sending the C code to the Python intermediary server
         axios.post(url, { code: bigMessageToSend })
             .then(response => {
-                const result = reponse.data;
-                console.log(result);
-                console.log(result.status);
+                console.log("Test result:", response.data.status);
 
-                const messageInput = document.getElementById("messageInput");
+                const bigMessageInput = document.getElementById('bigMessageInput');
 
-                if (result.status === "pass") {
-                    messageInput.classList.remove('fail');
-                    messageInput.classList.add('pass');
+                if (response.data.status === "pass") {
+                    bigMessageInput.classList.remove('fail');
+                    bigMessageInput.classList.add('pass');
                 } else {
-                    messageInput.classList.remove('pass');
-                    messageInput.classList.add('fail');
+                    bigMessageInput.classList.remove('pass');
+                    bigMessageInput.classList.add('fail');
                 }
             })
             .catch(error => {

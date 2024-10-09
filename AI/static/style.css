@@ -76,11 +76,11 @@ h1 {
     transition: border-color 0.3s;
 }
 
-.pass {
+#bigMessageInput.pass {
     border-color: green;
 }
 
-.fail {
+#bigMessageInput.fail {
     border-color: red;
 }
 
