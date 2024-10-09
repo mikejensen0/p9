@@ -1,25 +1,77 @@
  // Initialize an empty array to store messages and responses
  let messages = [];
 
- document.addEventListener("DOMContentLoaded", () => {
     const savedMessages = localStorage.getItem("chatMessages");
     if (savedMessages) {
         messages = JSON.parse(savedMessages);
         updateMessageList();
     }
     
-});
+    
+    window.addEventListener('beforeunload', function (event) {
+        checkServerStatus();
+      });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        // Your code here
+        if ( performance.getEntriesByType("navigation")[0].type === "reload") {
+            console.log("The page was refreshed.");
+            checkServerStatus();
+        } else {
+            console.log("called resetChat");
+            resetChat();
+        }
+    });
+
+    function resetChatFromButton(){
+        let userresponse = confirm("This will reset your chat. Proceed?");
+        if (userresponse){
+            resetChat();
+        }
+        else {
+            console.log("abort");
+        }
+    }
+    function resetChat() {
+        fetch('/reset_chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data.message); // Should log "Chat reset successfully."
+          localStorage.clear();
+          location.reload()
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          //alert("Failed to reset chat.");
+        });
+      }
+
+document.getElementById("messageInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter" && event.shiftKey) {
+        
+    } 
+    else if (event.key == "Enter")
+    {
+        event.preventDefault(); // Prevent the default behavior of adding a new line
+        postMessage(); // Call the postMessage function to send the message
+    }
+});
 function checkServerStatus() {
-   
     fetch('/status')
         .then(response => {
-            if (!response.ok) {
+            if (!response.ok && response.status !== 304) {
                 throw new Error('Server is down');
             }
         })
         .catch(error => {
-            localStorage.clear()
+            console.log(error)
+            localStorage.clear();
+            //location.reload();
         });
 }
 
@@ -106,5 +158,4 @@ function updateMessageList() {
     displayMessagesElement.scrollTop = displayMessagesElement.scrollHeight;
 
     localStorage.setItem("chatMessages", JSON.stringify(messages));
-setInterval(checkServerStatus, 5000);
 }

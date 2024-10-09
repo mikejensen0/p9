@@ -93,6 +93,24 @@ button {
     transition: background-color 0.3s, transform 0.3s;
 }
 
+.sendandresbutton{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; 
+    width: 40%; 
+}
+.sendandresbutton button {
+    flex: 1; 
+    padding: 10px 0; 
+    text-align: center;
+}
+.secondbutton {
+    background-color: red;
+}
+
+.secondbutton:hover{
+    background-color: rgb(218, 26, 26);
+}
 button:hover {
     background-color: #3a78c0;
 }
