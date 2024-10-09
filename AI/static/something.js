@@ -7,11 +7,31 @@
         updateMessageList();
     }
     
+    
     window.addEventListener('beforeunload', function (event) {
         checkServerStatus();
       });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        // Your code here
+        if ( performance.getEntriesByType("navigation")[0].type === "reload") {
+            console.log("The page was refreshed.");
+            checkServerStatus();
+        } else {
+            console.log("called resetChat");
+            resetChat();
+        }
+    });
 
+    function resetChatFromButton(){
+        let userresponse = confirm("This will reset your chat. Proceed?")
+        if (userresponse){
+            resetChat();
+        }
+        else {
+            console.log("abort");
+        }
+    }
     function resetChat() {
         fetch('/reset_chat', {
           method: 'POST',
