@@ -12,21 +12,20 @@ app = Flask(__name__)
 genai.configure(api_key=os.getenv("API_KEY", None))
 model = genai.GenerativeModel("gemini-1.5-flash")
 
+initial_history = [
+            {"role": "user", "parts": "You are a coding assistant you specialize in supporting user write code"},
+            {"role": "model", "parts": "Okay, I can do that"},
+        ]
+
 chat = model.start_chat(
-    history=[
-        {"role": "user", "parts": "You are a coding assistant..."},
-        {"role": "model", "parts": "Okay, i can do that"},
-    ]
+    history = initial_history
 )
 
 @app.route('/reset_chat', methods=['POST'])
 def reset_chat():
     global chat
     chat = model.start_chat(
-        history=[
-            {"role": "user", "parts": "You are a coding assistant you specialize in supporting user write code, furthermore when the user asks for code you will not give the full code you will only give a subset of the code. For example a single function, and then throuhg several promps you will provide the whole code to the user."},
-            {"role": "model", "parts": "Okay, I can do that"},
-        ]
+        history = initial_history
     )
     return jsonify({"message": "Chat reset successfully."})
 
