@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototype</title>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Window 1: Chat Window -->
+        <div class="window">
+            <h1>Ai</h1>
+            
+            <div id="displayMessages"></div>
+            <div class="input-container">
+                <textarea type="text" id="messageInput" placeholder="Enter a message"></textarea>
+            <div class="sendandresbutton">
+                <button onclick="sendAndRecieveMessageAi()">Send</button>
+                <button class="secondbutton" onclick="resetChatFromButton()">Reset chat</button>
+            </div>
+            </div>
+        </div>
+
+        <!-- Window 2: Big Text Input Window -->
+        <div class="window">
+            <h1>Code</h1>
+            <textarea id="bigMessageInput" placeholder="Write your code here"></textarea>
+            <button onclick="submitUserCode()">Submit</button>
+        </div>
+    </div>
+</body>
+<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+<script src="{{url_for('static', filename='client.js')}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</html>
