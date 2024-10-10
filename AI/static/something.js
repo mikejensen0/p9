@@ -71,13 +71,18 @@ function postBigMessage() {
                 console.log("Test result:", response.data.status);
 
                 const bigMessageInput = document.getElementById('bigMessageInput');
+                const button = document.getElementById("button");
 
                 if (response.data.status === "pass") {
                     bigMessageInput.classList.remove('fail');
                     bigMessageInput.classList.add('pass');
+                    button.classList.remove("fail");
+                    button.classList.add("pass");
                 } else {
                     bigMessageInput.classList.remove('pass');
                     bigMessageInput.classList.add('fail');
+                    button.classList.remove("pass");
+                    button.classList.add("fail");
                 }
             })
             .catch(error => {
