@@ -24,7 +24,7 @@ COPY . /app
 EXPOSE 5000
 
 # Define environment variable
-ENV FLASK_APP=app.py
+ENV FLASK_APP=server_compiler.py
 
 # Run the Flask server
 CMD ["flask", "run", "--host=0.0.0.0"]
