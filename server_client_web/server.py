@@ -1,6 +1,6 @@
 import google.generativeai as genai
 import os
-import requests  # Import requests to handle HTTP requests to the Docker container
+import requests
 from flask import Flask, jsonify, request, render_template
 from dotenv import load_dotenv
 
@@ -8,7 +8,6 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Setup the chat model (as in your original `hello.py`)
 genai.configure(api_key=os.getenv("API_KEY", None))
 model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -46,20 +45,22 @@ def reset_chat():
 
 @app.route('/submit_code_intermediary', methods=['POST'])
 def submit_code_intermediary():
-    # Get the C code from the JavaScript request
     data = request.json
     code = data.get('code')
     
     if 'main (' in code or 'main(' in code:
         return jsonify({"error": "Do not include a main function in your code submission"}), 400
 
-    # Send the C code to the Docker container (where Flask API is running)
-    docker_url = 'http://localhost:5000/submit_code'  # Docker Flask server URL
+    docker_url = 'http://localhost:5000/submit_code'
 
     response = requests.post(docker_url, json={'code': code})
-
-    # Return the result from the Docker Flask server back to the frontend
-    return jsonify(response.json())
+    
+    if "PASS" in response.text and "0 Failures" in response.text:
+        status = "pass"
+    else:
+        status = "fail"
+        
+    return jsonify({"status": status, "details": response.text})
 
 if __name__ == '__main__':
     app.run(debug=True)

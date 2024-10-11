@@ -43,7 +43,6 @@ h1 {
 #displayMessages {
     overflow-y: auto;
     flex-grow: 1;
-    margin-bottom: 10px;
     border: 1px solid #ddd;
     padding: 10px;
     border-radius: 6px;
@@ -74,6 +73,7 @@ h1 {
     border-radius: 6px;
     font-size: 1rem;
     transition: border-color 0.3s;
+    margin-bottom: 10px;
 }
 
 #messageInput:focus, #bigMessageInput:focus {
@@ -123,4 +123,26 @@ button:active {
 #bigMessageInput {
     height: 200px;
     resize: vertical;
+}
+
+#button {
+    margin: auto;
+    width: 45%;
+}
+
+#button.pass {
+    background-color: #5CBCA9;
+}
+
+#button.fail {
+    background-color: #d65252;
+}
+
+
+#bigMessageInput.pass {
+    border-color: #5CBCA9;
+}
+
+#bigMessageInput.fail {
+    border-color: #d65252;
 }
