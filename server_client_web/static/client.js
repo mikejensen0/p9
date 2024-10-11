@@ -114,29 +114,29 @@ function resetChat() {
 }
 
 function submitUserCode() {
-    const submittedCode = document.getElementById('bigMessageInput').value;
+    const submittedCode = document.getElementById('codeSubmit').value;
     const url = '/submit_code_intermediary';  // This points to server.py, not directly to Docker
     if (submittedCode.trim() !== "") {
         console.log("Code submitted:", submittedCode);
 
-        // Sending the C code to the Python intermediary server
+        // Sending the C code to the Python intermediary server to be send to docker server and run
         axios.post(url, { code: submittedCode })
             .then(response => {
                 console.log("Test result:", response.data.status);
 
-                const bigMessageInput = document.getElementById('bigMessageInput');
+                const codeSubmit = document.getElementById('codeSubmit');
                 const button = document.getElementById("button");
 
                 if (response.data.status === "pass") {
-                    bigMessageInput.classList.remove('fail');
-                    bigMessageInput.classList.add('pass');
-                    button.classList.remove("fail");
-                    button.classList.add("pass");
+                    codeSubmit.classList.remove('fail');
+                    codeSubmit.classList.add('pass');
+                    buttonRunTests.classList.remove("fail");
+                    buttonRunTests.classList.add("pass");
                 } else {
-                    bigMessageInput.classList.remove('pass');
-                    bigMessageInput.classList.add('fail');
-                    button.classList.remove("pass");
-                    button.classList.add("fail");
+                    codeSubmit.classList.remove('pass');
+                    codeSubmit.classList.add('fail');
+                    buttonRunTests.classList.remove("pass");
+                    buttonRunTests.classList.add("fail");
                 }
             })
     }

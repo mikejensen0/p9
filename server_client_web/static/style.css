@@ -65,7 +65,7 @@ h1 {
 }
 
 /* Input field styling */
-#messageInput, #bigMessageInput {
+#messageInput, #codeSubmit {
     flex-grow: 1;
     padding: 10px;
     margin-right: 10px;
@@ -76,7 +76,7 @@ h1 {
     margin-bottom: 10px;
 }
 
-#messageInput:focus, #bigMessageInput:focus {
+#messageInput:focus, #codeSubmit:focus {
     border-color: #4a90e2;
     outline: none;
 }
@@ -120,29 +120,29 @@ button:active {
 }
 
 /* Big text area for the second window */
-#bigMessageInput {
+#codeSubmit {
     height: 200px;
     resize: vertical;
 }
 
-#button {
+#buttonRunTests, #buttonSubmitCode {
     margin: auto;
     width: 45%;
 }
 
-#button.pass {
+#buttonRunTests.pass {
     background-color: #5CBCA9;
 }
 
-#button.fail {
+#buttonRunTests.fail {
     background-color: #d65252;
 }
 
 
-#bigMessageInput.pass {
+#codeSubmit.pass {
     border-color: #5CBCA9;
 }
 
-#bigMessageInput.fail {
+#codeSubmit.fail {
     border-color: #d65252;
 }
