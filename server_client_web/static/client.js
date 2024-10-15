@@ -113,6 +113,17 @@ function resetChat() {
         });
 }
 
+// Helper function for submitUserCode()
+function toggleClasses(element, condition) {
+    if (condition) {
+        element.classList.add("pass");
+        element.classList.remove("fail");
+    } else {
+        element.classList.add("fail");
+        element.classList.remove("pass");
+    }
+}
+
 function submitUserCode() {
     const submittedCode = document.getElementById('codeSubmit').value;
     const url = '/submit_code_intermediary';  // This points to server.py, not directly to Docker
@@ -124,20 +135,10 @@ function submitUserCode() {
             .then(response => {
                 console.log("Test result:", response.data.status);
 
-                const codeSubmit = document.getElementById('codeSubmit');
-                const button = document.getElementById("button");
+                const isPass = response.data.status === "pass";
 
-                if (response.data.status === "pass") {
-                    codeSubmit.classList.remove('fail');
-                    codeSubmit.classList.add('pass');
-                    buttonRunTests.classList.remove("fail");
-                    buttonRunTests.classList.add("pass");
-                } else {
-                    codeSubmit.classList.remove('pass');
-                    codeSubmit.classList.add('fail');
-                    buttonRunTests.classList.remove("pass");
-                    buttonRunTests.classList.add("fail");
-                }
+                // pass/fail tags added to html elements. May need to be explicitly retrieved later.
+                toggleClasses(testResultWindow, isPass);
             })
     }
 }

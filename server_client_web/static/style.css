@@ -125,20 +125,6 @@ button:active {
     resize: vertical;
 }
 
-#buttonRunTests, #buttonSubmitCode {
-    margin: auto;
-    width: 45%;
-}
-
-#buttonRunTests.pass {
-    background-color: #5CBCA9;
-}
-
-#buttonRunTests.fail {
-    background-color: #d65252;
-}
-
-
 #codeSubmit.pass {
     border-color: #5CBCA9;
 }
@@ -146,3 +132,29 @@ button:active {
 #codeSubmit.fail {
     border-color: #d65252;
 }
+
+#buttonSubmitCode {
+    margin: auto;
+    width: 45%;
+}
+
+#buttonRunTests {
+    margin: auto;
+    width: 45%;
+    background-color: white;
+    color: #4a90e2;
+    border: 1px solid #4a90e2;
+} 
+/*
+#buttonRunTests.pass {
+    background-color: #5CBCA9;
+    color: white;
+    border: none;
+}
+
+#buttonRunTests.fail {
+    background-color: #d65252;
+    color: white;
+    border: none;
+}
+*/
