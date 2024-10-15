@@ -127,13 +127,29 @@ function toggleClasses(element, condition) {
 function submitUserCode() {
     const submittedCode = document.getElementById('codeSubmit').value;
     const url = '/submit_code_intermediary';  // This points to server.py, not directly to Docker
+    var testArray = [];
     if (submittedCode.trim() !== "") {
         console.log("Code submitted:", submittedCode);
 
         // Sending the C code to the Python intermediary server to be send to docker server and run
         axios.post(url, { code: submittedCode })
             .then(response => {
-                console.log("Test result:", response.data.status);
+                responseString = JSON.stringify(response.data);
+                responseString = responseString.split('test_output')[1];
+                testArray = responseString.split('test_');
+
+                var i = 1;
+
+                while(i < 3){
+                    var test = testArray[i];
+                    var testDetails = test.split(':');
+                    var testName = testDetails[0];
+                    var testResults = testDetails[2].split("\\")[0];
+
+                    console.log('test: ' + testName + ' Status: ' + response.data.status + testResults);
+                    i++;
+                }
+                
 
                 const isPass = response.data.status === "pass";
 
