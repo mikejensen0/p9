@@ -32,7 +32,7 @@ function sendAndRecieveMessageAi() {
         })
             .then(response => response.json())
             .then(data => {
-                messages[messages.length - 1].response = data.response;
+                messages[messages.length - 1].response = marked.parse(data.response);
                 updateDisplayedMessages();
             })
             .catch(error => console.log('Error:', error));
@@ -48,7 +48,7 @@ function updateDisplayedMessages() {
         displayMessagesElement.appendChild(userMessageElement);
         if (msgObj.response) {
             const responseMessageElement = document.createElement("p");
-            responseMessageElement.innerText = msgObj.response;
+            responseMessageElement.innerHTML = msgObj.response;
             responseMessageElement.style.color = "#4a90e2"; 
             displayMessagesElement.appendChild(responseMessageElement);
         }
