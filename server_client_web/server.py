@@ -3,6 +3,8 @@ import os
 import requests  # Import requests to handle HTTP requests to the Docker container
 from flask import Flask, jsonify, request, render_template
 from dotenv import load_dotenv
+from tenacity import retry, stop_after_attempt
+
 
 load_dotenv()
 
@@ -30,6 +32,7 @@ def status():
     return jsonify({"status": "running"}), 200
 
 @app.route('/post_message', methods=['POST'])
+@retry(stop=stop_after_attempt(10))
 def post_message():
     data = request.json
     received_message = data.get('message')

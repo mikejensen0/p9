@@ -44,13 +44,12 @@ h1 {
     overflow-y: auto;
     flex-grow: 1;
     margin-bottom: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid hsl(0, 0%, 87%);
     padding: 10px;
     border-radius: 6px;
-    white-space: pre-wrap; 
 }
 
-#displayMessages p {
+#displayMessages div{
     background: #f0f0f0;
     padding: 8px;
     margin-bottom: 5px;
