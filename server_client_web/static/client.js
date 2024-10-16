@@ -32,14 +32,11 @@ function sendAndRecieveMessageAi() {
         })
             .then(response => response.json())
             .then(data => {
-                const responseAsHtml = marked.parse(data.response);
+                let responseAsHtml = marked.parse(data.response);
                 /* <P> causes a weird white space in our ai responses at end and start of the 
                    response so this is just added to replace it with an element that does not*/
-                const replacedFirstPInHtml = responseAsHtml.replace("<p>", "<span>").replace("</p>", "</span>");
-                const responseReversed = replacedFirstPInHtml.split(' ').reverse().join(' ');
-                const replacedLastPInHtml = responseReversed.replace("<p>", "<span>").replace("</p>", "</span>");
-                const ResponseWithStartEndPReplaced  = replacedLastPInHtml.split(' ').reverse().join(' ')
-                messages[messages.length - 1].response = ResponseWithStartEndPReplaced
+                responseAsHtml = responseAsHtml.replace(/^<p>/, "<span>").replace(/<\/p>$/, "</span>");
+                messages[messages.length - 1].response = responseAsHtml;
                 updateDisplayedMessages();
             })
             .catch(error => console.log('Error:', error));
