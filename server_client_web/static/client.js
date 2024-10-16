@@ -32,7 +32,14 @@ function sendAndRecieveMessageAi() {
         })
             .then(response => response.json())
             .then(data => {
-                messages[messages.length - 1].response = marked.parse(data.response);
+                const responseAsHtml = marked.parse(data.response);
+                /* <P> causes a weird white space in our ai responses at end and start of the 
+                   response so this is just added to replace it with an element that does not*/
+                const replacedFirstPInHtml = responseAsHtml.replace("<p>", "<span>").replace("</p>", "</span>");
+                const responseReversed = replacedFirstPInHtml.split(' ').reverse().join(' ');
+                const replacedLastPInHtml = responseReversed.replace("<p>", "<span>").replace("</p>", "</span>");
+                const ResponseWithStartEndPReplaced  = replacedLastPInHtml.split(' ').reverse().join(' ')
+                messages[messages.length - 1].response = ResponseWithStartEndPReplaced
                 updateDisplayedMessages();
             })
             .catch(error => console.log('Error:', error));
@@ -43,11 +50,11 @@ function updateDisplayedMessages() {
     const displayMessagesElement = document.getElementById("displayMessages");
     displayMessagesElement.innerHTML = "";
     messages.forEach((msgObj) => {
-        const userMessageElement = document.createElement("p");
+        const userMessageElement = document.createElement("div");
         userMessageElement.innerText = msgObj.user;
         displayMessagesElement.appendChild(userMessageElement);
         if (msgObj.response) {
-            const responseMessageElement = document.createElement("p");
+            const responseMessageElement = document.createElement("div");
             responseMessageElement.innerHTML = msgObj.response;
             responseMessageElement.style.color = "#4a90e2"; 
             displayMessagesElement.appendChild(responseMessageElement);
