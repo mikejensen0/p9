@@ -139,15 +139,31 @@ function submitUserCode() {
                 testArray = responseString.split('test_');
 
                 var i = 1;
-
-                while(i < 3){
+                var allTestsDetails = []
+                while(i < testArray.length){
+                    var currentTestDetails = [];
                     var test = testArray[i];
                     var testDetails = test.split(':');
                     var testName = testDetails[0];
-                    var testResults = testDetails[2].split("\\")[0];
+                    var testStatus = testDetails[1].split('\\')[0];
+                    currentTestDetails.push(testName, testStatus);
+                    if (testStatus === 'FAIL') {
+                        var testResults = testDetails[2].split('\\')[0];
+                        var testResultsFixed = testResults.replace('Expected ', '').replace(' Was', '').split(' ');
+                        testResultsFixed.shift();
+                        currentTestDetails.push(testResultsFixed);
+                    }
 
-                    console.log('test: ' + testName + ' Status: ' + response.data.status + testResults);
+                    allTestsDetails.push(currentTestDetails);
                     i++;
+                }
+                for(var j = 0; j < allTestsDetails.length; j++){
+                    if(allTestsDetails[j][1] === 'FAIL'){
+                        console.log('Test: ' + allTestsDetails[j][0] + ' Status: ' + allTestsDetails[j][1] + ' Expected: ' + allTestsDetails[j][2][0] + ' Actual: ' + allTestsDetails[j][2][1]);
+                    }
+                    else{
+                        console.log('Test: ' + allTestsDetails[j][0] + ' Status: ' + allTestsDetails[j][1]);
+                    }
                 }
                 
 
