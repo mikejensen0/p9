@@ -113,15 +113,54 @@ function resetChat() {
         });
 }
 
-// Helper function for submitUserCode()
-function toggleClasses(element, condition) {
-    if (condition) {
-        element.classList.add("pass");
-        element.classList.remove("fail");
-    } else {
-        element.classList.add("fail");
-        element.classList.remove("pass");
+function deactivateSiblings(element){
+    const parent = element.parentElement;
+    for (const child of parent.children) {
+        if (child !== element) {
+            child.classList.remove('active');
+        }
     }
+}
+
+function toggleContent(element, selectedTestElement, testObj) {
+    let isActive = element.classList.toggle('active');
+    selectedTestElement.innerHTML = "";
+    if (isActive) {
+        deactivateSiblings(element);
+
+        const selectedTestHeader = document.createElement("h1");
+        const testResultElement = document.createElement("p");
+        selectedTestHeader.innerText = testObj.name;
+        selectedTestHeader.classList.add(testObj.status);
+        testResultElement.innerText = "Expected: " + testObj.expected + "\n Actual: " + testObj.actual;
+        selectedTestElement.appendChild(selectedTestHeader);
+        selectedTestElement.appendChild(testResultElement);
+    }
+}
+
+// Helper function for submitUserCode()
+function showTestStatuses(testDetails) {
+    const testResultsContainerElement = document.getElementById("testResults");
+    testResultsContainerElement.innerHTML = "";
+    const testResultsHeaderElement = document.createElement("h1");
+    const testResultItemsElement = document.createElement("div");
+    const selectedTestElement = document.createElement("div");
+    testResultItemsElement.className = "testResults";
+    testResultsHeaderElement.innerText = "Test Results"; 
+    testResultsContainerElement.appendChild(testResultsHeaderElement);
+    testDetails.forEach((testObj) => {
+        const testResultElement = document.createElement("div");
+        testResultElement.className = "testResult";
+        testResultElement.innerText = testObj.name;
+        testResultElement.classList.add(testObj.status);
+        if(testObj.status === 'FAIL'){
+            testResultElement.onclick = () => toggleContent(testResultElement, selectedTestElement, testObj);
+        }
+        testResultItemsElement.appendChild(testResultElement);
+        testResultsContainerElement.appendChild(testResultItemsElement);
+        testResultsContainerElement.appendChild(selectedTestElement);
+    });
+    testResultItemsElement.scrollTop = testResultItemsElement.scrollHeight;
 }
 
 function submitUserCode() {
@@ -139,38 +178,27 @@ function submitUserCode() {
                 testArray = responseString.split('test_');
 
                 var i = 1;
-                var allTestsDetails = []
+                var allTestsDetails = [];
                 while(i < testArray.length){
-                    var currentTestDetails = [];
                     var test = testArray[i];
                     var testDetails = test.split(':');
-                    var testName = testDetails[0];
-                    var testStatus = testDetails[1].split('\\')[0];
-                    currentTestDetails.push(testName, testStatus);
-                    if (testStatus === 'FAIL') {
+                    let testObj = {
+                        name: testDetails[0],
+                        status: testDetails[1].split('\\')[0],
+                    };
+
+                    if (testObj.status === 'FAIL') {
                         var testResults = testDetails[2].split('\\')[0];
                         var testResultsFixed = testResults.replace('Expected ', '').replace(' Was', '').split(' ');
                         testResultsFixed.shift();
-                        currentTestDetails.push(testResultsFixed);
+                        testObj.expected = testResultsFixed[0];
+                        testObj.actual = testResultsFixed[1];
                     }
-
-                    allTestsDetails.push(currentTestDetails);
+                    allTestsDetails.push(testObj);
                     i++;
                 }
-                for(var j = 0; j < allTestsDetails.length; j++){
-                    if(allTestsDetails[j][1] === 'FAIL'){
-                        console.log('Test: ' + allTestsDetails[j][0] + ' Status: ' + allTestsDetails[j][1] + ' Expected: ' + allTestsDetails[j][2][0] + ' Actual: ' + allTestsDetails[j][2][1]);
-                    }
-                    else{
-                        console.log('Test: ' + allTestsDetails[j][0] + ' Status: ' + allTestsDetails[j][1]);
-                    }
-                }
+                showTestStatuses(allTestsDetails);
                 
-
-                const isPass = response.data.status === "pass";
-
-                // pass/fail tags added to html elements. May need to be explicitly retrieved later.
-                toggleClasses(testResultWindow, isPass);
             })
     }
 }

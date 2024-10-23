@@ -158,3 +158,61 @@ button:active {
     border: none;
 }
 */
+
+.PASS {
+    color: green;
+}
+
+.PASS div {
+    color: #333;
+}
+
+.FAIL {
+    color: red;
+    
+}
+
+.FAIL div{
+    color: #333;
+}
+
+.testResults-container {
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+.testResults {
+    display: flex;
+    overflow-x: auto; /* Enables horizontal scrolling */
+    padding: 10px;
+}
+
+.testResult {
+    flex: 0 0 auto;
+    margin-right: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 2px solid #333;
+    border-radius: 6px;
+}
+
+.active.testResult {
+    background-color: #e6e6e6;
+}
+
+.testResults div:last-child {
+    margin-right: 0;
+}
+
+.testResults::-webkit-scrollbar {
+    height: 8px;
+}
+
+.testResults::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+}
+
+.testResults::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
