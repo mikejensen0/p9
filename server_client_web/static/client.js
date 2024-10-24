@@ -146,7 +146,7 @@ function showTestStatuses(testDetails) {
     const testResultItemsElement = document.createElement("div");
     const selectedTestElement = document.createElement("div");
     testResultItemsElement.className = "testResults";
-    testResultsHeaderElement.innerText = "Test Results"; 
+    //testResultsHeaderElement.innerText = "Test Results"; 
     testResultsContainerElement.appendChild(testResultsHeaderElement);
     testDetails.forEach((testObj) => {
         const testResultElement = document.createElement("div");

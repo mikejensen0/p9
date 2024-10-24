@@ -3,9 +3,8 @@
     font-family: Arial, sans-serif;
     background-color: #f0f2f5;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    height: 100vh;
     margin: 0;
     color: #333;
 }
@@ -13,30 +12,44 @@
 /* Main container for both windows */
 .main-container {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
     width: 90%;
     max-width: 1200px;
     height: 80vh;
 }
 
+.window-container {
+    display: flex;
+    gap: 30px;
+}
+
+.sub-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 50%;
+    max-width: 1200px;
+    height: 80vh;
+}
+
+.header {
+    background-color: #b7b7b7;
+    padding: 5px;
+    border-radius: 8px 8px 0px 0px;
+    font-size: 1rem;
+    color: white;
+}
+
 /* Styling for each window */
 .window {
     background: #fff;
-    padding: 20px;
-    border-radius: 12px;
+    border-radius: 8px;
+
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
-
-/* Header */
-h1 {
-    font-size: 1.5rem;
-    color: #4a90e2;
-    margin-bottom: 20px;
-    text-align: center;
 }
 
 /* Displayed message list styling */
@@ -62,10 +75,24 @@ h1 {
     display: flex;
     align-items: center;
     margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.top-bar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.top-bar-button-container {
+    width: 30%;
 }
 
 /* Input field styling */
-#messageInput, #codeSubmit {
+#messageInput {
     flex-grow: 1;
     padding: 10px;
     margin-right: 10px;
@@ -74,6 +101,16 @@ h1 {
     font-size: 1rem;
     transition: border-color 0.3s;
     margin-bottom: 10px;
+}
+
+#codeSubmit {
+    flex-grow: 1;
+    padding: 10px;
+    border: 0px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    resize: none;
+    overflow: auto;
 }
 
 #messageInput:focus, #codeSubmit:focus {
