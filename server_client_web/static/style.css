@@ -38,13 +38,15 @@
     border-radius: 8px 8px 0px 0px;
     font-size: 1rem;
     color: white;
+    position: sticky;
+    top: 0; /* Stick to the top of the viewport */
+    z-index: 1000;
 }
 
 /* Styling for each window */
 .window {
     background: #fff;
     border-radius: 8px;
-
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     flex: 1;
     display: flex;
@@ -103,14 +105,34 @@
     margin-bottom: 10px;
 }
 
+.code-submit-container {
+    display: flex;
+    position: relative;
+    height: 100%;
+}
+
+.line-numbers {
+    width: 20px;
+    color: #b7b7b7;
+    background: white;
+    padding: 10px;
+    text-align: right;
+    user-select: none;
+    overflow: hidden;
+    height: 100%;
+}
+
+
 #codeSubmit {
     flex-grow: 1;
     padding: 10px;
     border: 0px;
     font-size: 1rem;
     transition: border-color 0.3s;
-    resize: none;
+    resize: vertical;
     overflow: auto;
+    white-space: pre;
+    height: 100%;
 }
 
 #messageInput:focus, #codeSubmit:focus {
@@ -154,12 +176,6 @@ button:hover {
 
 button:active {
     transform: scale(0.95);
-}
-
-/* Big text area for the second window */
-#codeSubmit {
-    height: 200px;
-    resize: vertical;
 }
 
 #codeSubmit.pass {

@@ -33,7 +33,10 @@
                 <!-- Window 2: Code Submission Window -->
                 <div class="window">
                     <div class="header">Code</div>
-                    <textarea id="codeSubmit" placeholder="Write your code here"></textarea>
+                    <div class="code-submit-container">
+                        <div class="line-numbers" id="lineNumbers"></div>
+                        <textarea id="codeSubmit" placeholder="Write your code here" oninput="updateLineNumbers()" onscroll="syncScroll()"></textarea>
+                    </div>
                 </div>
                 
                 <!-- Window 3: Test Results Window -->

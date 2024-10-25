@@ -202,3 +202,36 @@ function submitUserCode() {
             })
     }
 }
+
+function updateLineNumbers() {
+    const textarea = document.getElementById('codeSubmit');
+    const lineNumbers = document.getElementById('lineNumbers');
+    
+    // Split the text content by newline to get the number of lines
+    const lines = textarea.value.split('\n').length;
+    
+    // Generate line numbers
+    let lineNumbersContent = '';
+    for (let i = 1; i <= lines; i++) {
+        lineNumbersContent += i + '\n';
+    }
+    
+    // Update the line numbers div
+    lineNumbers.textContent = lineNumbersContent;
+}
+
+function syncScroll() {
+    const textarea = document.getElementById('codeSubmit');
+    const lineNumbers = document.getElementById('lineNumbers');
+    
+    // Sync the scroll position of lineNumbers with the textarea
+    lineNumbers.scrollTop = textarea.scrollTop;
+}
+
+// Add this event listener to keep the scrolling synchronized
+document.getElementById('codeSubmit').addEventListener('scroll', syncScroll);
+document.addEventListener('DOMContentLoaded', () => {
+    updateLineNumbers();
+    syncScroll(); // Sync scroll initially
+});
+
