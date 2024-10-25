@@ -58,13 +58,12 @@
 #displayMessages {
     overflow-y: auto;
     flex-grow: 1;
-    border: 1px solid #ddd;
+    border: 0px;
     padding: 10px;
     border-radius: 6px;
-    white-space: pre-wrap; 
 }
 
-#displayMessages p {
+#displayMessages div{
     background: #f0f0f0;
     padding: 8px;
     margin-bottom: 5px;
