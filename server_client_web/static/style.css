@@ -58,6 +58,7 @@
 #displayMessages {
     overflow-y: auto;
     flex-grow: 1;
+    height: calc(80vh - 150px);
     border: 0px;
     padding: 10px;
     border-radius: 6px;
