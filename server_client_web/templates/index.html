@@ -7,25 +7,44 @@
 </head>
 <body>
     <div class="main-container">
-        <!-- Window 1: Chat Window -->
-        <div class="window">
-            <h1>Ai</h1>
-            
-            <div id="displayMessages"></div>
-            <div class="input-container">
-                <textarea type="text" id="messageInput" placeholder="Enter a message"></textarea>
-            <div class="sendandresbutton">
-                <button onclick="sendAndRecieveMessageAi()">Send</button>
-                <button class="secondbutton" onclick="resetChatFromButton()">Reset chat</button>
-            </div>
+        <div class="top-bar-container">
+            <div class="top-bar-button-container">
+                <button id="buttonRunTests" onclick="submitUserCode()">Run Tests</button>
+                <button id="buttonSubmitCode" onclick="submitUserCode()">Submit Answer</button>
             </div>
         </div>
+        <div class="window-container">
+            <!-- Window 1: Chat Window -->
+            <div class="window">
+                <div class="header">Ai</div>
 
-        <!-- Window 2: Big Text Input Window -->
-        <div class="window">
-            <h1>Code</h1>
-            <textarea id="bigMessageInput" placeholder="Write your code here"></textarea>
-            <button onclick="submitUserCode()">Submit</button>
+                <div id="displayMessages"></div>
+                    <div class="input-container">
+                        <textarea type="text" id="messageInput" placeholder="Enter a message"></textarea>
+                    <div class="sendandresbutton">
+                        <button onclick="sendAndRecieveMessageAi()">Send</button>
+                        <button class="secondbutton" onclick="resetChatFromButton()">Reset chat</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Container for vertical alignment -->
+            <div class="sub-container"> 
+                <!-- Window 2: Code Submission Window -->
+                <div class="window">
+                    <div class="header">Code</div>
+                    <div class="code-submit-container">
+                        <div class="line-numbers" id="lineNumbers"></div>
+                        <textarea id="codeSubmit" placeholder="Write your code here" oninput="updateLineNumbers()" onscroll="syncScroll()"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Window 3: Test Results Window -->
+                <div class="window">
+                    <div class="header">Test Results</div>
+                    <div class="testResults-container" id="testResults"></div>
+                </div>
+            </div>
         </div>
     </div>
 </body>

@@ -120,16 +120,151 @@ function resetChat() {
         });
 }
 
-function submitUserCode() {
-    const bigMessageToSend = document.getElementById('bigMessageInput').value;
-    const url = '/submit_code_intermediary';  // This points to server.py, not directly to Docker
-    if (bigMessageToSend.trim() !== "") {
-        axios.post(url, { code: bigMessageToSend })  // Sending the C code to the Python intermediary server
-            .then(response => {
-                console.log(response.data);  // Print the response (test output or errors)
-            })
-            .catch(error => {
-                console.error('Error:', error.response ? error.response.data : error.message);
-            });
+function deactivateSiblings(element){
+    const parent = element.parentElement;
+    for (const child of parent.children) {
+        if (child !== element) {
+            child.classList.remove('active');
+        }
     }
 }
+
+function toggleContent(element, selectedTestElement, testObj) {
+    let isActive = element.classList.toggle('active');
+    selectedTestElement.innerHTML = "";
+    if (isActive) {
+        deactivateSiblings(element);
+
+        const selectedTestHeader = document.createElement("h1");
+        const testResultElement = document.createElement("p");
+        selectedTestHeader.innerText = testObj.name;
+        selectedTestHeader.classList.add(testObj.status);
+        testResultElement.innerText = "Expected: " + testObj.expected + "\n Actual: " + testObj.actual;
+        selectedTestElement.appendChild(selectedTestHeader);
+        selectedTestElement.appendChild(testResultElement);
+    }
+}
+
+// Helper function for submitUserCode()
+function showTestStatuses(testDetails) {
+    const testResultsContainerElement = document.getElementById("testResults");
+    testResultsContainerElement.innerHTML = "";
+    const testResultsHeaderElement = document.createElement("h1");
+    const testResultItemsElement = document.createElement("div");
+    const selectedTestElement = document.createElement("div");
+    testResultItemsElement.className = "testResults";
+    //testResultsHeaderElement.innerText = "Test Results"; 
+    testResultsContainerElement.appendChild(testResultsHeaderElement);
+    testDetails.forEach((testObj) => {
+        const testResultElement = document.createElement("div");
+        testResultElement.className = "testResult";
+        testResultElement.innerText = testObj.name;
+        testResultElement.classList.add(testObj.status);
+        if(testObj.status === 'FAIL'){
+            testResultElement.onclick = () => toggleContent(testResultElement, selectedTestElement, testObj);
+        }
+        testResultItemsElement.appendChild(testResultElement);
+        testResultsContainerElement.appendChild(testResultItemsElement);
+        testResultsContainerElement.appendChild(selectedTestElement);
+    });
+    testResultItemsElement.scrollTop = testResultItemsElement.scrollHeight;
+}
+
+function submitUserCode() {
+    const submittedCode = document.getElementById('codeSubmit').value;
+    const url = '/submit_code_intermediary';  // This points to server.py, not directly to Docker
+    var testArray = [];
+    if (submittedCode.trim() !== "") {
+        console.log("Code submitted:", submittedCode);
+
+        // Sending the C code to the Python intermediary server to be send to docker server and run
+        axios.post(url, { code: submittedCode })
+            .then(response => {
+                responseString = JSON.stringify(response.data);
+                responseString = responseString.split('test_output')[1];
+                testArray = responseString.split('test_');
+
+                var i = 1;
+                var allTestsDetails = [];
+                while(i < testArray.length){
+                    var test = testArray[i];
+                    var testDetails = test.split(':');
+                    let testObj = {
+                        name: testDetails[0],
+                        status: testDetails[1].split('\\')[0],
+                    };
+
+                    if (testObj.status === 'FAIL') {
+                        var testResults = testDetails[2].split('\\')[0];
+                        var testResultsFixed = testResults.replace('Expected ', '').replace(' Was', '').split(' ');
+                        testResultsFixed.shift();
+                        testObj.expected = testResultsFixed[0];
+                        testObj.actual = testResultsFixed[1];
+                    }
+                    allTestsDetails.push(testObj);
+                    i++;
+                }
+                showTestStatuses(allTestsDetails);
+                
+            })
+    }
+}
+
+function updateLineNumbers() {
+    const textarea = document.getElementById('codeSubmit');
+    const lineNumbers = document.getElementById('lineNumbers');
+    
+    // Split the text content by newline to get the number of lines
+    const lines = textarea.value.split('\n').length;
+    
+    // Generate line numbers
+    let lineNumbersContent = '';
+    for (let i = 1; i <= lines; i++) {
+        lineNumbersContent += i + '\n';
+    } 
+    changeCSSRelativeToScrollBars(textarea)
+    // Update the line numbers div
+    lineNumbers.textContent = lineNumbersContent;
+}
+
+/* a bit hacky fix that solves problems with lines and text not lining up correctly
+   once a scrollwheel is added to the ui*/
+   function changeCSSRelativeToScrollBars(textarea){
+    if(hasVerticalScrollbar(textarea))
+        {
+            document.querySelector('.code-submit-container ').style.paddingTop = '20px';
+        }
+    
+        if(hasHorizontalScrollbar(textarea))
+        {
+            document.querySelector('.line-numbers').style.overflowX = 'scroll';
+        }
+        else {
+            document.querySelector('.line-numbers').style.overflowX = 'hidden';
+        }
+    
+}
+
+function hasHorizontalScrollbar(element) {
+    return element.scrollWidth > element.clientWidth;
+}
+
+function hasVerticalScrollbar(element) {
+    return element.scrollHeight > element.clientHeight;
+}
+
+function syncScroll() {
+    const textarea = document.getElementById('codeSubmit');
+    const lineNumbers = document.getElementById('lineNumbers');
+    
+    // Sync the scroll position of lineNumbers with the textarea
+    lineNumbers.scrollTop = textarea.scrollTop;
+}
+
+// Add this event listener to keep the scrolling synchronized
+document.getElementById('codeSubmit').addEventListener('scroll', syncScroll);
+document.addEventListener('DOMContentLoaded', () => {
+    updateLineNumbers();
+    syncScroll(); // Sync scroll initially
+});
+
