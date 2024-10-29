@@ -220,24 +220,16 @@ function updateLineNumbers() {
     // Generate line numbers
     let lineNumbersContent = '';
     for (let i = 1; i <= lines; i++) {
-        lineNumbersContent += i + '\n' ;
+        lineNumbersContent += i + '\n';
     } 
     changeCSSRelativeToScrollBars(textarea)
     // Update the line numbers div
     lineNumbers.textContent = lineNumbersContent;
 }
 
-function syncScroll() {
-    const textarea = document.getElementById('codeSubmit');
-    const lineNumbers = document.getElementById('lineNumbers');
-    
-    // Sync the scroll position of lineNumbers with the textarea
-    lineNumbers.scrollTop = textarea.scrollTop;
-}
-
 /* a bit hacky fix that solves problems with lines and text not lining up correctly
    once a scrollwheel is added to the ui*/
-function changeCSSRelativeToScrollBars(textarea){
+   function changeCSSRelativeToScrollBars(textarea){
     if(hasVerticalScrollbar(textarea))
         {
             document.querySelector('.code-submit-container ').style.paddingTop = '20px';
@@ -252,6 +244,7 @@ function changeCSSRelativeToScrollBars(textarea){
         }
     
 }
+
 function hasHorizontalScrollbar(element) {
     return element.scrollWidth > element.clientWidth;
 }
@@ -259,6 +252,15 @@ function hasHorizontalScrollbar(element) {
 function hasVerticalScrollbar(element) {
     return element.scrollHeight > element.clientHeight;
 }
+
+function syncScroll() {
+    const textarea = document.getElementById('codeSubmit');
+    const lineNumbers = document.getElementById('lineNumbers');
+    
+    // Sync the scroll position of lineNumbers with the textarea
+    lineNumbers.scrollTop = textarea.scrollTop;
+}
+
 // Add this event listener to keep the scrolling synchronized
 document.getElementById('codeSubmit').addEventListener('scroll', syncScroll);
 document.addEventListener('DOMContentLoaded', () => {
