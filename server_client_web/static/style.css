@@ -110,7 +110,7 @@
     position: relative;
     height: 100%;
     overflow: hidden;
-    padding-top: 9px;
+    padding-top: 0px;
 }
 
 .line-numbers {
@@ -120,7 +120,8 @@
     padding: 10px;
     text-align: right;
     user-select: none;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden;
     height: 100%;
 }
 
