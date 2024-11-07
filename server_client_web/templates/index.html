@@ -32,10 +32,16 @@
             <div class="sub-container"> 
                 <!-- Window 2: Code Submission Window -->
                 <div class="window">
-                    <div class="header">Code</div>
-                    <div class="code-submit-container">
-                        <div class="line-numbers" id="lineNumbers"></div>
-                        <textarea id="codeSubmit" placeholder="Write your code here" oninput="updateLineNumbers()" onscroll="syncScroll()"></textarea>
+                    <div class="tab">
+                        <button class="tasksTab active" onclick="toggleTasksCode('tasks')">Tasks</button>
+                        <button class="codeTab" onclick="toggleTasksCode('code')">Code</button>
+                    </div>
+                    <div class="selectedTab-container">
+                        <div id="task-container"></div>
+                        <div id="code-container">
+                            <div class="line-numbers" id="lineNumbers"></div>
+                            <textarea id="code" placeholder="Write your code here" oninput="updateLineNumbers()" onscroll="syncScroll()"></textarea>
+                        </div>
                     </div>
                 </div>
                 

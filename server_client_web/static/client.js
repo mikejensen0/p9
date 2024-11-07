@@ -170,8 +170,23 @@ function showTestStatuses(testDetails) {
     testResultItemsElement.scrollTop = testResultItemsElement.scrollHeight;
 }
 
+function toggleTasksCode(selected) {
+    if(selected === 'tasks') {
+        document.getElementsByClassName('tasksTab')[0].classList.add('active');
+        document.getElementsByClassName('codeTab')[0].classList.remove('active');
+        document.getElementById('task-container').className = 'active';
+        document.getElementById('code-container').className = '';
+    }
+    else if(selected === 'code') {
+        document.getElementsByClassName('tasksTab')[0].classList.remove('active');
+        document.getElementsByClassName('codeTab')[0].classList.add('active');
+        document.getElementById('task-container').className = '';
+        document.getElementById('code-container').className = 'active';
+    }
+}
+
 function submitUserCode() {
-    const submittedCode = document.getElementById('codeSubmit').value;
+    const submittedCode = document.getElementById('code').value;
     const url = '/submit_code_intermediary';  // This points to server.py, not directly to Docker
     var testArray = [];
     if (submittedCode.trim() !== "") {
@@ -211,7 +226,7 @@ function submitUserCode() {
 }
 
 function updateLineNumbers() {
-    const textarea = document.getElementById('codeSubmit');
+    const textarea = document.getElementById('code');
     const lineNumbers = document.getElementById('lineNumbers');
     
     // Split the text content by newline to get the number of lines
@@ -232,7 +247,7 @@ function updateLineNumbers() {
    function changeCSSRelativeToScrollBars(textarea){
     if(hasVerticalScrollbar(textarea))
         {
-            document.querySelector('.code-submit-container ').style.paddingTop = '20px';
+            document.querySelector('.code-container ').style.paddingTop = '20px';
         }
     
         if(hasHorizontalScrollbar(textarea))
@@ -254,7 +269,7 @@ function hasVerticalScrollbar(element) {
 }
 
 function syncScroll() {
-    const textarea = document.getElementById('codeSubmit');
+    const textarea = document.getElementById('code');
     const lineNumbers = document.getElementById('lineNumbers');
     
     // Sync the scroll position of lineNumbers with the textarea
@@ -262,7 +277,7 @@ function syncScroll() {
 }
 
 // Add this event listener to keep the scrolling synchronized
-document.getElementById('codeSubmit').addEventListener('scroll', syncScroll);
+document.getElementById('code').addEventListener('scroll', syncScroll);
 document.addEventListener('DOMContentLoaded', () => {
     updateLineNumbers();
     syncScroll(); // Sync scroll initially
