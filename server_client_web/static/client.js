@@ -237,7 +237,7 @@ function updateLineNumbers() {
     for (let i = 1; i <= lines; i++) {
         lineNumbersContent += i + '\n';
     } 
-    changeCSSRelativeToScrollBars(textarea)
+    //changeCSSRelativeToScrollBars(textarea)
     // Update the line numbers div
     lineNumbers.textContent = lineNumbersContent;
 }

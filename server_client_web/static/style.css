@@ -113,6 +113,8 @@
     color: #b7b7b7;
     background: white;
     padding: 10px;
+    line-height: 1rem;
+    font-size: 1rem;
     text-align: right;
     user-select: none;
     overflow-x: hidden;
@@ -125,11 +127,13 @@
     padding: 10px;
     border: 0px;
     font-size: 1rem;
+    line-height: 1rem;
     transition: border-color 0.3s;
     resize: vertical;
     overflow: auto;
     white-space: pre;
     height: 100%;
+    resize: none;
 }
 
 #messageInput:focus, #code:focus {
@@ -270,7 +274,6 @@ button:active {
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 14px 16px;
   transition: 0.3s;
   font-size: 17px;
 }
@@ -285,6 +288,10 @@ button:active {
   background-color: #ccc;
 }
 
+.selectedTab-container {
+    height: 100%;
+}
+
 /* Style the tab content */
 .selectedTab-container > div{
   display: none;
@@ -292,4 +299,8 @@ button:active {
 
 .selectedTab-container div.active {
   display: flex;
+}
+
+#code-container {
+    height: 100%;
 }
