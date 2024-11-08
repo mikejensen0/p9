@@ -237,19 +237,14 @@ function updateLineNumbers() {
     for (let i = 1; i <= lines; i++) {
         lineNumbersContent += i + '\n';
     } 
-    //changeCSSRelativeToScrollBars(textarea)
+    changeCSSRelativeToScrollBars(textarea)
     // Update the line numbers div
     lineNumbers.textContent = lineNumbersContent;
 }
 
 /* a bit hacky fix that solves problems with lines and text not lining up correctly
    once a scrollwheel is added to the ui*/
-   function changeCSSRelativeToScrollBars(textarea){
-    if(hasVerticalScrollbar(textarea))
-        {
-            document.querySelector('.code-container ').style.paddingTop = '20px';
-        }
-    
+   function changeCSSRelativeToScrollBars(textarea){    
         if(hasHorizontalScrollbar(textarea))
         {
             document.querySelector('.line-numbers').style.overflowX = 'scroll';
@@ -257,7 +252,6 @@ function updateLineNumbers() {
         else {
             document.querySelector('.line-numbers').style.overflowX = 'hidden';
         }
-    
 }
 
 function hasHorizontalScrollbar(element) {
