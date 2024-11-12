@@ -8,10 +8,7 @@
 <body>
     <div class="main-container">
         <div class="top-bar-container">
-            <div class="top-bar-button-container">
-                <button id="buttonRunTests" onclick="submitUserCode()">Run Tests</button>
-                <button id="buttonSubmitCode" onclick="submitUserCode()">Submit Answer</button>
-            </div>
+            <div class="tasks-button-container"></div>
         </div>
         <div class="window-container">
             <!-- Window 1: Chat Window -->
@@ -37,7 +34,8 @@
                         <button class="codeTab" onclick="toggleTasksCode('code')">Code</button>
                     </div>
                     <div class="selectedTab-container">
-                        <div id="task-container"></div>
+                        <div id="task-container">
+                        </div>
                         <div id="code-container">
                             <div class="line-numbers" id="lineNumbers"></div>
                             <textarea id="code" style="resize: none;" placeholder="Write your code here" oninput="updateLineNumbers()" onscroll="syncScroll()"></textarea>
@@ -52,10 +50,17 @@
                 </div>
             </div>
         </div>
+        <div class="bottom-bar-container">
+            <div class="bottom-button-container">
+                <button id="buttonRunTests" onclick="submitUserCode()">Run Tests</button>
+                <button id="buttonSubmitCode" onclick="submitUserCode()">Submit Answer</button>
+            </div>
+        </div>
     </div>
 </body>
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 <script src="{{url_for('static', filename='client.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>generateTaskButtons(tasks)</script>
 </html>

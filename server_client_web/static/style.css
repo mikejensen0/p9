@@ -85,7 +85,16 @@
     margin-bottom: 10px;
 }
 
-.top-bar-button-container {
+.bottom-bar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.bottom-button-container {
     width: 30%;
 }
 

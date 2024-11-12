@@ -120,6 +120,32 @@ function resetChat() {
         });
 }
 
+function selectTask(id){
+    var taskText = getTaskById(id);
+    const taskContainer = document.getElementById("task-container");
+    taskContainer.innerHTML = "";
+    const taskInformation = document.createElement("div");
+    taskInformation.innerText = taskText;
+    taskContainer.appendChild(taskInformation);
+}
+
+function getTaskById(id){
+    return tasks[id];
+}
+tasks = ["1", "2", "3", "5"];
+
+function generateTaskButtons(tasks){
+    const tasksButtonContainerElement = document.getElementsByClassName("tasks-button-container")[0];
+    tasksButtonContainerElement.innerHTML = "";
+    tasks.forEach((elem, id) => {
+        const taskButtonElement = document.createElement("button");
+        taskButtonElement.innerText = id+1;
+        taskButtonElement.className = "taskButton";
+        taskButtonElement.onclick = () => selectTask(id);
+        tasksButtonContainerElement.appendChild(taskButtonElement);
+    })
+}
+
 function deactivateSiblings(element){
     const parent = element.parentElement;
     for (const child of parent.children) {
