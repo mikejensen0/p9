@@ -1,4 +1,5 @@
 let messages = [];
+taskList = ["1", "2", "3", "5"];
 
 //Used to get locally stored chat with AI if any 
 const savedMessages = localStorage.getItem("chatMessages");
@@ -120,6 +121,30 @@ function resetChat() {
         });
 }
 
+function setInitialTask(tasks){
+    randomTasks = randomiseTasks(tasks.slice(1));
+    randomTasks.unshift(tasks[0]);
+    taskList = randomTasks;
+    selectTask(0);
+}
+
+function randomiseTasks(tasks){
+    let currentIndex = tasks.length;
+
+    // While there remain elements to shuffle...
+    while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    let randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [tasks[currentIndex], tasks[randomIndex]] = [
+      tasks[randomIndex], tasks[currentIndex]];
+    return tasks;
+  }
+}
+
 function selectTask(id){
     var taskText = getTaskById(id);
     const taskContainer = document.getElementById("task-container");
@@ -130,9 +155,8 @@ function selectTask(id){
 }
 
 function getTaskById(id){
-    return tasks[id];
+    return taskList[id];
 }
-tasks = ["1", "2", "3", "5"];
 
 function generateTaskButtons(tasks){
     const tasksButtonContainerElement = document.getElementsByClassName("tasks-button-container")[0];

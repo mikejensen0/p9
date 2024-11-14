@@ -34,8 +34,7 @@
                         <button class="codeTab" onclick="toggleTasksCode('code')">Code</button>
                     </div>
                     <div class="selectedTab-container">
-                        <div id="task-container">
-                        </div>
+                        <div class="active" id="task-container"></div>
                         <div id="code-container">
                             <div class="line-numbers" id="lineNumbers"></div>
                             <textarea id="code" style="resize: none;" placeholder="Write your code here" oninput="updateLineNumbers()" onscroll="syncScroll()"></textarea>
@@ -62,5 +61,6 @@
 <script src="{{url_for('static', filename='client.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script>generateTaskButtons(tasks)</script>
+<script>setInitialTask(taskList)</script>
+<script>generateTaskButtons(taskList)</script>
 </html>
