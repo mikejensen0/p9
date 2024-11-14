@@ -131,18 +131,18 @@ function setInitialTask(tasks){
 function randomiseTasks(tasks){
     let currentIndex = tasks.length;
 
-    // While there remain elements to shuffle...
+// While there remain elements to shuffle...
     while (currentIndex != 0) {
 
-    // Pick a remaining element...
-    let randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
+        // Pick a remaining element...
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
 
-    // And swap it with the current element.
-    [tasks[currentIndex], tasks[randomIndex]] = [
-      tasks[randomIndex], tasks[currentIndex]];
-    return tasks;
-  }
+        // And swap it with the current element.
+        [tasks[currentIndex], tasks[randomIndex]] = [tasks[randomIndex], tasks[currentIndex]];
+
+        return tasks;
+    }
 }
 
 function selectTask(id){
@@ -150,7 +150,7 @@ function selectTask(id){
     const taskContainer = document.getElementById("task-container");
     taskContainer.innerHTML = "";
     const taskInformation = document.createElement("div");
-    taskInformation.innerText = taskText;
+    taskInformation.innerHTML = displayTask(taskText);
     taskContainer.appendChild(taskInformation);
 }
 
@@ -158,13 +158,24 @@ function getTaskById(id){
     return taskList[id];
 }
 
+function displayTask(task){
+    const responseAsHtml = marked.parse(task);
+    /* fix white spaces*/
+    const replacedFirstPInHtml = responseAsHtml.replace("<p>", "<span>").replace("</p>", "</span>");
+    const responseReversed = replacedFirstPInHtml.split(' ').reverse().join(' ');
+    const replacedLastPInHtml = responseReversed.replace("<p>", "<span>").replace("</p>", "</span>");
+    const ResponseWithStartEndPReplaced  = replacedLastPInHtml.split(' ').reverse().join(' ');
+
+    return ResponseWithStartEndPReplaced;
+} 
+
 function generateTaskButtons(tasks){
     const tasksButtonContainerElement = document.getElementsByClassName("tasks-button-container")[0];
     tasksButtonContainerElement.innerHTML = "";
     tasks.forEach((elem, id) => {
         const taskButtonElement = document.createElement("button");
         taskButtonElement.innerText = id+1;
-        taskButtonElement.className = "taskButton";
+        taskButtonElement.className = "task-button";
         taskButtonElement.onclick = () => selectTask(id);
         tasksButtonContainerElement.appendChild(taskButtonElement);
     })
