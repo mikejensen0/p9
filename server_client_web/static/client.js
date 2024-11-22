@@ -1,5 +1,6 @@
 let messages = [];
 taskList = ["1", "2", "3", "5"];
+frictionList = [1,2,3,4]
 
 //Used to get locally stored chat with AI if any 
 const savedMessages = localStorage.getItem("chatMessages");
@@ -122,14 +123,14 @@ function resetChat() {
 }
 
 function setInitialTask(tasks){
-    randomTasks = randomiseTasks(tasks.slice(1));
-    randomTasks.unshift(tasks[0]);
-    taskList = randomTasks;
+    taskList = randomiser(tasks);
+    assignFrictions(frictionList);
     selectTask(0);
 }
 
-function randomiseTasks(tasks){
-    let currentIndex = tasks.length;
+function randomiser(list){
+    list.push(0);
+    let currentIndex = list.length;
 
 // While there remain elements to shuffle...
     while (currentIndex != 0) {
@@ -139,10 +140,16 @@ function randomiseTasks(tasks){
         currentIndex--;
 
         // And swap it with the current element.
-        [tasks[currentIndex], tasks[randomIndex]] = [tasks[randomIndex], tasks[currentIndex]];
+        [list[currentIndex], list[randomIndex]] = [list[randomIndex], list[currentIndex]];
 
-        return tasks;
+        return list.filter(function(e) { return e !== 0 });
     }
+}
+
+function assignFrictions(frictions){
+    randomisedFrictions = randomiser(frictions.slice(1));
+    randomisedFrictions.unshift(frictions[0]);
+    frictionList = randomisedFrictions;
 }
 
 function selectTask(id){
@@ -152,6 +159,7 @@ function selectTask(id){
     const taskInformation = document.createElement("div");
     taskInformation.innerHTML = displayTask(taskText);
     taskContainer.appendChild(taskInformation);
+    console.log(frictionList[id]);
 }
 
 function getTaskById(id){
