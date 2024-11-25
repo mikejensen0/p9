@@ -1,6 +1,7 @@
 let messages = [];
-taskList = ["1", "2", "3", "5"];
-frictionList = [1,2,3,4]
+let taskIds = [0,1,2,3]; 
+let taskTexts = ["1", "2", "3", "5"];
+let frictionList = [0,1,2,3]
 
 //Used to get locally stored chat with AI if any 
 const savedMessages = localStorage.getItem("chatMessages");
@@ -123,13 +124,26 @@ function resetChat() {
 }
 
 function setInitialTask(tasks){
-    taskList = randomiser(tasks);
+    var shuffledIds = randomiser(tasks);
+    taskTexts = adjustTaskList(shuffledIds);
+    taskIds = shuffledIds;
     assignFrictions(frictionList);
     selectTask(0);
 }
 
+function adjustTaskList(idList) {
+    let adjustedTaskList = [];
+    let i = 0;
+
+    taskTexts.forEach((task) => {
+        adjustedTaskList[idList[i]] = task;
+        i++;
+    })
+
+    return adjustedTaskList;
+}
+
 function randomiser(list){
-    list.push(0);
     let currentIndex = list.length;
 
 // While there remain elements to shuffle...
@@ -142,7 +156,7 @@ function randomiser(list){
         // And swap it with the current element.
         [list[currentIndex], list[randomIndex]] = [list[randomIndex], list[currentIndex]];
 
-        return list.filter(function(e) { return e !== 0 });
+        return list;
     }
 }
 
@@ -153,20 +167,37 @@ function assignFrictions(frictions){
 }
 
 function selectTask(id){
+    displayTaskText(id);
+    displayTaskChat(id);
+    displayTaskTests(id);
+}
+
+function displayTaskText(id) {
     var taskText = getTaskById(id);
     const taskContainer = document.getElementById("task-container");
     taskContainer.innerHTML = "";
     const taskInformation = document.createElement("div");
-    taskInformation.innerHTML = displayTask(taskText);
+    taskInformation.innerHTML = taskHTML(taskText);
     taskContainer.appendChild(taskInformation);
-    console.log(frictionList[id]);
 }
 
-function getTaskById(id){
-    return taskList[id];
+function changeTaskChat(id) {
+    var friction = getFrictionById(id);
 }
 
-function displayTask(task){
+function changeTaskTests(id) {
+    
+}
+
+function getTaskById(id) {
+    return taskTexts[id];
+}
+
+function getFrictionById(id) {
+    return frictionList[id];
+}
+
+function taskHTML(task){
     const responseAsHtml = marked.parse(task);
     /* fix white spaces*/
     const replacedFirstPInHtml = responseAsHtml.replace("<p>", "<span>").replace("</p>", "</span>");
