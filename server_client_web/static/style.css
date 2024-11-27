@@ -85,19 +85,6 @@
     margin-bottom: 10px;
 }
 
-.tasks-button-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px; 
-    width: 20%; 
-}
-
-.task-button {
-    flex: 1; 
-    padding: 10px 0; 
-    text-align: center;
-}
-
 .bottom-bar-container {
     display: flex;
     align-items: center;
@@ -210,7 +197,7 @@ button:active {
     border-color: #d65252;
 }
 
-#buttonSubmitCode {
+#buttonNextTask {
     margin: auto;
     width: 45%;
 }

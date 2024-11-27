@@ -1,7 +1,9 @@
 let messages = [];
 let taskIds = [0,1,2,3]; 
 let taskTexts = ["1", "2", "3", "5"];
-let frictionList = [0,1,2,3]
+let frictionIds = [0,1,2,3];
+let currentTask = 0;
+let currentFriction = 0;
 
 //Used to get locally stored chat with AI if any 
 const savedMessages = localStorage.getItem("chatMessages");
@@ -105,6 +107,7 @@ function resetChatFromButton() {
         console.log("abort");
     }
 }
+
 function resetChat() {
     fetch('/reset_chat', {
         method: 'POST',
@@ -127,7 +130,7 @@ function setInitialTask(tasks){
     var shuffledIds = randomiser(tasks);
     taskTexts = adjustTaskList(shuffledIds);
     taskIds = shuffledIds;
-    assignFrictions(frictionList);
+    assignFrictions(frictionIds);
     selectTask(0);
 }
 
@@ -146,14 +149,10 @@ function adjustTaskList(idList) {
 function randomiser(list){
     let currentIndex = list.length;
 
-// While there remain elements to shuffle...
     while (currentIndex != 0) {
-
-        // Pick a remaining element...
         let randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
 
-        // And swap it with the current element.
         [list[currentIndex], list[randomIndex]] = [list[randomIndex], list[currentIndex]];
 
         return list;
@@ -163,17 +162,25 @@ function randomiser(list){
 function assignFrictions(frictions){
     randomisedFrictions = randomiser(frictions.slice(1));
     randomisedFrictions.unshift(frictions[0]);
-    frictionList = randomisedFrictions;
+    frictionIds = randomisedFrictions;
 }
 
-function selectTask(id){
-    displayTaskText(id);
-    displayTaskChat(id);
-    displayTaskTests(id);
+function selectTask(taskIndex, frictionIndex){
+    toggleTasksCode('tasks');
+    changeTaskText(taskIndex);
+    resetCode();
+    changeTaskTests(taskIndex);
+    changeTaskChat(frictionIndex);
 }
 
-function displayTaskText(id) {
-    var taskText = getTaskById(id);
+function nextTask(){
+    if((currentTask + 1) < taskIds.length && (currentFriction + 1) < frictionIds.length) {
+        selectTask(++currentTask, ++currentFriction);
+    }
+}
+
+function changeTaskText(index) {
+    var taskText = getTaskText(index);
     const taskContainer = document.getElementById("task-container");
     taskContainer.innerHTML = "";
     const taskInformation = document.createElement("div");
@@ -181,25 +188,35 @@ function displayTaskText(id) {
     taskContainer.appendChild(taskInformation);
 }
 
-function changeTaskChat(id) {
-    var friction = getFrictionById(id);
+function resetCode(){
+    const code = document.getElementById("code");
+    code.value = "";
+    updateLineNumbers();
 }
 
-function changeTaskTests(id) {
-    
+function changeTaskChat(index) {
+    var frictionId = getFrictionId(index);
 }
 
-function getTaskById(id) {
-    return taskTexts[id];
+function changeTaskTests(index) {
+    var taskId = getTaskId(index);
 }
 
-function getFrictionById(id) {
-    return frictionList[id];
+function getTaskId(index) {
+    return taskIds[index];
+}
+
+function getTaskText(index) {
+    return taskTexts[index];
+}
+
+function getFrictionId(index) {
+    return frictionIds[index];
 }
 
 function taskHTML(task){
     const responseAsHtml = marked.parse(task);
-    /* fix white spaces*/
+
     const replacedFirstPInHtml = responseAsHtml.replace("<p>", "<span>").replace("</p>", "</span>");
     const responseReversed = replacedFirstPInHtml.split(' ').reverse().join(' ');
     const replacedLastPInHtml = responseReversed.replace("<p>", "<span>").replace("</p>", "</span>");
@@ -207,18 +224,6 @@ function taskHTML(task){
 
     return ResponseWithStartEndPReplaced;
 } 
-
-function generateTaskButtons(tasks){
-    const tasksButtonContainerElement = document.getElementsByClassName("tasks-button-container")[0];
-    tasksButtonContainerElement.innerHTML = "";
-    tasks.forEach((elem, id) => {
-        const taskButtonElement = document.createElement("button");
-        taskButtonElement.innerText = id+1;
-        taskButtonElement.className = "task-button";
-        taskButtonElement.onclick = () => selectTask(id);
-        tasksButtonContainerElement.appendChild(taskButtonElement);
-    })
-}
 
 function deactivateSiblings(element){
     const parent = element.parentElement;
@@ -247,6 +252,8 @@ function toggleContent(element, selectedTestElement, testObj) {
 
 // Helper function for submitUserCode()
 function showTestStatuses(testDetails) {
+    let first = true;
+
     const testResultsContainerElement = document.getElementById("testResults");
     testResultsContainerElement.innerHTML = "";
     const testResultsHeaderElement = document.createElement("h1");
@@ -266,6 +273,10 @@ function showTestStatuses(testDetails) {
         testResultItemsElement.appendChild(testResultElement);
         testResultsContainerElement.appendChild(testResultItemsElement);
         testResultsContainerElement.appendChild(selectedTestElement);
+        if(testObj.status === 'FAIL' && first) {
+            testResultElement.click();
+            first = false;
+        }
     });
     testResultItemsElement.scrollTop = testResultItemsElement.scrollHeight;
 }
@@ -342,9 +353,7 @@ function updateLineNumbers() {
     lineNumbers.textContent = lineNumbersContent;
 }
 
-/* a bit hacky fix that solves problems with lines and text not lining up correctly
-   once a scrollwheel is added to the ui*/
-   function changeCSSRelativeToScrollBars(textarea){    
+function changeCSSRelativeToScrollBars(textarea){    
         if(hasHorizontalScrollbar(textarea))
         {
             document.querySelector('.line-numbers').style.overflowX = 'scroll';
