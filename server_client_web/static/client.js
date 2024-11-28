@@ -12,6 +12,13 @@ if (savedMessages) {
     updateDisplayedMessages();
 }
 
+document.getElementById('displayMessages').addEventListener('click', (event) => {
+    if (event.target.tagName.toLowerCase() === 'code') {
+        event.target.style.color = '#4a90e2';
+        event.target.style.textShadow = '0px 0px 0px';
+    }
+});
+
 document.getElementById("messageInput").addEventListener("keypress", function (event) {
     if (event.key === "Enter" && event.shiftKey) {
 
@@ -63,6 +70,15 @@ function updateDisplayedMessages() {
             responseMessageElement.innerHTML = msgObj.response;
             responseMessageElement.style.color = "#4a90e2"; 
             displayMessagesElement.appendChild(responseMessageElement);
+            const codeElements = responseMessageElement.querySelectorAll('code');
+    
+            codeElements.forEach((codeElement) => {
+                const codeLength = codeElement.textContent.length;
+                if(codeLength < 20){
+                    codeElement.style.color = '#4a90e2'; 
+                    codeElement.style.textShadow = '0px 0px 0px'; 
+                }
+            });
         }
     });
     displayMessagesElement.scrollTop = displayMessagesElement.scrollHeight;
