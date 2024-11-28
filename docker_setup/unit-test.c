@@ -29,6 +29,8 @@ void test_sub_negative() {
 }
 */
 //Stacktests
+
+#ifdef TEST_CASE_1
 #define MAX_SIZE 100 // Define the maximum size of the stack
 #define MAX_INPUT_LENGTH 1000
 typedef struct {
@@ -43,7 +45,23 @@ extern int isFull(Stack *s);
 
 // Check if the stack is empty
 extern int isEmpty(Stack *s);
+#endif
 
+#ifdef TEST_CASE_2
+#define MAX_SIZE 100 // Define the maximum size of the stack
+#define MAX_INPUT_LENGTH 1000
+typedef struct {
+    int arr[MAX_SIZE];
+    int top;
+} Stack;
+
+extern void initialize(Stack *s);
+
+// Check if the stack is full
+extern int isFull(Stack *s);
+
+// Check if the stack is empty
+extern int isEmpty(Stack *s);
 // Push an element onto the stack
 extern void push(Stack *s, int value);
 
@@ -55,7 +73,7 @@ extern int pop(Stack *s) ;
 extern void add(Stack *s) ;
 // Subtract the top two elements (top - second top)
 extern void sub(Stack *s) ;
-
+#endif
 void test_add_positive() {
     Stack s;  
     initialize(&s);
@@ -66,7 +84,6 @@ void test_add_positive() {
 void test_add_positie() {
     Stack s;  
     initialize(&s);
-    push(&s, 20);
     TEST_ASSERT(s.arr[0] == 19);
 }
 int main(void) {

@@ -23,7 +23,7 @@ def submit_code():
     with open(USER_CODE_PATH, 'w') as f:
         f.write(code)
     # Compile the user's code along with the unit test file and Unity
-    compile_command = ['gcc', USER_CODE_PATH, UNIT_TEST_PATH, UNITY_PATH, '-o', TEST_BINARY_PATH, f'-I{UNITY_INCLUDE_PATH}']
+    compile_command = ['gcc', USER_CODE_PATH, UNIT_TEST_PATH, UNITY_PATH, '-o', TEST_BINARY_PATH, f'-I{UNITY_INCLUDE_PATH}',  '-DTEST_CASE_1']
     compile_result = subprocess.run(compile_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if compile_result.returncode != 0:
         return jsonify({
