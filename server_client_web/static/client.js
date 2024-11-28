@@ -1,4 +1,9 @@
 let messages = [];
+let taskIds = [0,1,2,3]; 
+let taskTexts = ["1", "2", "3", "5"];
+let frictionIds = [0,1,2,3];
+let currentTask = 0;
+let currentFriction = 0;
 
 //Used to get locally stored chat with AI if any 
 const savedMessages = localStorage.getItem("chatMessages");
@@ -118,6 +123,7 @@ function resetChatFromButton() {
         console.log("abort");
     }
 }
+
 function resetChat() {
     fetch('/reset_chat', {
         method: 'POST',
@@ -135,6 +141,105 @@ function resetChat() {
             console.error('Error:', error);
         });
 }
+
+function setInitialTask(tasks){
+    var shuffledIds = randomiser(tasks);
+    taskTexts = adjustTaskList(shuffledIds);
+    taskIds = shuffledIds;
+    assignFrictions(frictionIds);
+    selectTask(0);
+}
+
+function adjustTaskList(idList) {
+    let adjustedTaskList = [];
+    let i = 0;
+
+    taskTexts.forEach((task) => {
+        adjustedTaskList[idList[i]] = task;
+        i++;
+    })
+
+    return adjustedTaskList;
+}
+
+function randomiser(list){
+    let currentIndex = list.length;
+
+    while (currentIndex != 0) {
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        [list[currentIndex], list[randomIndex]] = [list[randomIndex], list[currentIndex]];
+
+        return list;
+    }
+}
+
+function assignFrictions(frictions){
+    randomisedFrictions = randomiser(frictions.slice(1));
+    randomisedFrictions.unshift(frictions[0]);
+    frictionIds = randomisedFrictions;
+}
+
+function selectTask(taskIndex, frictionIndex){
+    toggleTasksCode('tasks');
+    changeTaskText(taskIndex);
+    resetCode();
+    changeTaskTests(taskIndex);
+    changeTaskChat(frictionIndex);
+}
+
+function nextTask(){
+    if((currentTask + 1) < taskIds.length && (currentFriction + 1) < frictionIds.length) {
+        selectTask(++currentTask, ++currentFriction);
+    }
+}
+
+function changeTaskText(index) {
+    var taskText = getTaskText(index);
+    const taskContainer = document.getElementById("task-container");
+    taskContainer.innerHTML = "";
+    const taskInformation = document.createElement("div");
+    taskInformation.innerHTML = taskHTML(taskText);
+    taskContainer.appendChild(taskInformation);
+}
+
+function resetCode(){
+    const code = document.getElementById("code");
+    code.value = "";
+    updateLineNumbers();
+}
+
+function changeTaskChat(index) {
+    var frictionId = getFrictionId(index);
+}
+
+function changeTaskTests(index) {
+    var taskId = getTaskId(index);
+}
+
+function getTaskId(index) {
+    return taskIds[index];
+}
+
+function getTaskText(index) {
+    return taskTexts[index];
+}
+
+function getFrictionId(index) {
+    return frictionIds[index];
+}
+
+function taskHTML(task){
+    const responseAsHtml = marked.parse(task);
+
+    const replacedFirstPInHtml = responseAsHtml.replace("<p>", "<span>").replace("</p>", "</span>");
+    const responseReversed = replacedFirstPInHtml.split(' ').reverse().join(' ');
+    const replacedLastPInHtml = responseReversed.replace("<p>", "<span>").replace("</p>", "</span>");
+    const ResponseWithStartEndPReplaced  = replacedLastPInHtml.split(' ').reverse().join(' ');
+
+    return ResponseWithStartEndPReplaced;
+} 
 
 function deactivateSiblings(element){
     const parent = element.parentElement;
@@ -163,6 +268,8 @@ function toggleContent(element, selectedTestElement, testObj) {
 
 // Helper function for submitUserCode()
 function showTestStatuses(testDetails) {
+    let first = true;
+
     const testResultsContainerElement = document.getElementById("testResults");
     testResultsContainerElement.innerHTML = "";
     const testResultsHeaderElement = document.createElement("h1");
@@ -182,12 +289,31 @@ function showTestStatuses(testDetails) {
         testResultItemsElement.appendChild(testResultElement);
         testResultsContainerElement.appendChild(testResultItemsElement);
         testResultsContainerElement.appendChild(selectedTestElement);
+        if(testObj.status === 'FAIL' && first) {
+            testResultElement.click();
+            first = false;
+        }
     });
     testResultItemsElement.scrollTop = testResultItemsElement.scrollHeight;
 }
 
+function toggleTasksCode(selected) {
+    if(selected === 'tasks') {
+        document.getElementsByClassName('tasksTab')[0].classList.add('active');
+        document.getElementsByClassName('codeTab')[0].classList.remove('active');
+        document.getElementById('task-container').className = 'active';
+        document.getElementById('code-container').className = '';
+    }
+    else if(selected === 'code') {
+        document.getElementsByClassName('tasksTab')[0].classList.remove('active');
+        document.getElementsByClassName('codeTab')[0].classList.add('active');
+        document.getElementById('task-container').className = '';
+        document.getElementById('code-container').className = 'active';
+    }
+}
+
 function submitUserCode() {
-    const submittedCode = document.getElementById('codeSubmit').value;
+    const submittedCode = document.getElementById('code').value;
     const url = '/submit_code_intermediary';  // This points to server.py, not directly to Docker
     var testArray = [];
     if (submittedCode.trim() !== "") {
@@ -227,7 +353,7 @@ function submitUserCode() {
 }
 
 function updateLineNumbers() {
-    const textarea = document.getElementById('codeSubmit');
+    const textarea = document.getElementById('code');
     const lineNumbers = document.getElementById('lineNumbers');
     
     // Split the text content by newline to get the number of lines
@@ -243,14 +369,7 @@ function updateLineNumbers() {
     lineNumbers.textContent = lineNumbersContent;
 }
 
-/* a bit hacky fix that solves problems with lines and text not lining up correctly
-   once a scrollwheel is added to the ui*/
-   function changeCSSRelativeToScrollBars(textarea){
-    if(hasVerticalScrollbar(textarea))
-        {
-            document.querySelector('.code-submit-container ').style.paddingTop = '20px';
-        }
-    
+function changeCSSRelativeToScrollBars(textarea){    
         if(hasHorizontalScrollbar(textarea))
         {
             document.querySelector('.line-numbers').style.overflowX = 'scroll';
@@ -258,7 +377,6 @@ function updateLineNumbers() {
         else {
             document.querySelector('.line-numbers').style.overflowX = 'hidden';
         }
-    
 }
 
 function hasHorizontalScrollbar(element) {
@@ -270,7 +388,7 @@ function hasVerticalScrollbar(element) {
 }
 
 function syncScroll() {
-    const textarea = document.getElementById('codeSubmit');
+    const textarea = document.getElementById('code');
     const lineNumbers = document.getElementById('lineNumbers');
     
     // Sync the scroll position of lineNumbers with the textarea
@@ -278,7 +396,7 @@ function syncScroll() {
 }
 
 // Add this event listener to keep the scrolling synchronized
-document.getElementById('codeSubmit').addEventListener('scroll', syncScroll);
+document.getElementById('code').addEventListener('scroll', syncScroll);
 document.addEventListener('DOMContentLoaded', () => {
     updateLineNumbers();
     syncScroll(); // Sync scroll initially
