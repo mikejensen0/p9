@@ -50,13 +50,14 @@ def reset_chat():
 def submit_code_intermediary():
     data = request.json
     code = data.get('code')
-    
+    somt = data.get('somt')
+    print(somt)
     if 'main (' in code or 'main(' in code:
         return jsonify({"error": "Do not include a main function in your code submission"}), 400
 
     docker_url = 'http://localhost:5000/submit_code'
 
-    response = requests.post(docker_url, json={'code': code})
+    response = requests.post(docker_url, json={'code': code, 'somt': somt})
     
     if "PASS" in response.text and "0 Failures" in response.text:
         status = "pass"

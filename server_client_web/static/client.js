@@ -1,6 +1,46 @@
 let messages = [];
 let taskIds = [0,1,2,3]; 
-let taskTexts = ["1", "2", "3", "5"];
+const stackTask = `Make a simple stack implementation in c that supports basic operations PUSH, POP, ADD,  SUB.
+- PUSH is used to PUSH a number onto top of the stack and POP is used to remove the top number from the stack.
+
+- ADD does addition with the top and second top element.
+- SUB functions the same but does subtraction. 
+- Input to the stack should be given by an outside user in the form of inputs like this [“PUSH 20”, “PUSH 30”, “ADD”, PUSH 20] 
+which should then give us a stack with 20 as the top element and 50 as the second element on the stack. 
+- After executing the operations there should be some output that shows how the stack currently looks so for example [50, 20] (or [20, 50]?) 
+`
+const stateMachineTask = `Make a simple state machine simulating a door in c. It should have the states OPENED, CLOSED, and LOCKED. 
+It should have the following transitions: 
+- OPEN->CLOSE, puts us in state CLOSED	
+
+- CLOSE->LOCK, puts us in state LOCKED
+- LOCK->UNLOCK, puts us in state CLOSED
+- CLOSE->OPEN, puts us in state OPENED 
+- Transitions should be requested from the user to execute given in the following format [“OPEN”, “CLOSE”, “LOCK, “UNLOCK”]. 
+If an invalid transition is given the program inform of this upon execution. 
+`
+
+const expressionParserTask = ` Create a simple expression parser in C to evaluate mathematical expressions.
+ It should support basic operations: 
+ - Addition 
+
+ - Subtraction
+ - Multiplication 
+ - Division 
+ - Parentheses 
+ - It should follow the order of operations rules in mathematics.
+ -  It should be able to support any number of operands and operators. 
+ - 2 + 4 * 4 should evaluate to 18 and (2 + 4) * 4 should evaluate to 24
+`
+const navigationTask = ` Create a simple path-finding algorithm in c that finds the quickest path from one starting point to an endpoint in a grid. 
+- If no path exists the program should notify of this
+
+- The program should receive the grid by user input in the form of a 2D array
+-  An example could look like this [[2,1,1], [0, 1, 1],[0, 0,2]] where 2 represents the end and starting point, 1 represents a blocked path and 0 represents a traversable path
+-  This specific example should then give us a minimum path of 4.
+`
+let taskTexts = [stackTask, stateMachineTask, expressionParserTask, navigationTask];
+let code_description = ["stack", "state", "expression", "nav"];
 let frictionIds = [0,1,2,3];
 let currentTask = 0;
 let currentFriction = 0;
@@ -145,9 +185,11 @@ function resetChat() {
 function setInitialTask(tasks){
     var shuffledIds = randomiser(tasks);
     taskTexts = adjustTaskList(shuffledIds);
+    code_description = adjustthisList(shuffledIds);
+    console.log(code_description)
     taskIds = shuffledIds;
     assignFrictions(frictionIds);
-    selectTask(0);
+    selectTask(0, 0);
 }
 
 function adjustTaskList(idList) {
@@ -155,6 +197,18 @@ function adjustTaskList(idList) {
     let i = 0;
 
     taskTexts.forEach((task) => {
+        adjustedTaskList[idList[i]] = task;
+        i++;
+    })
+
+    return adjustedTaskList;
+}
+
+function adjustthisList(idList) {
+    let adjustedTaskList = [];
+    let i = 0;
+
+    code_description.forEach((task) => {
         adjustedTaskList[idList[i]] = task;
         i++;
     })
@@ -212,6 +266,9 @@ function resetCode(){
 
 function changeTaskChat(index) {
     var frictionId = getFrictionId(index);
+    const code = document.getElementById("code");
+    code.value = code_description[index];
+    updateLineNumbers();
 }
 
 function changeTaskTests(index) {
@@ -320,9 +377,10 @@ function submitUserCode() {
         console.log("Code submitted:", submittedCode);
 
         // Sending the C code to the Python intermediary server to be send to docker server and run
-        axios.post(url, { code: submittedCode })
+        axios.post(url, { code: submittedCode, somt: code_description[0] })
             .then(response => {
                 responseString = JSON.stringify(response.data);
+                console.log(responseString)
                 responseString = responseString.split('test_output')[1];
                 testArray = responseString.split('test_');
 

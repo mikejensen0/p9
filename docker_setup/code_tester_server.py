@@ -16,6 +16,7 @@ def submit_code():
     # Get the submitted C code as a string from the POST request
     data = request.get_json()
     code = data.get('code', '')
+    somt = data.get('somt', '')
     if not code:
         return jsonify({"error": "No C code provided"}), 400
     # Save the user's C code to a temporary file
@@ -30,7 +31,7 @@ def submit_code():
             "details": compile_result.stderr.decode()
         }), 400
     # Run the compiled binary (which contains the Unity tests)
-    test_result = subprocess.run([TEST_BINARY_PATH], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    test_result = subprocess.run([TEST_BINARY_PATH], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env={**os.environ, "SOMT_VAR": somt})
     return jsonify({
         "test_output": test_result.stdout.decode(),
         "test_errors": test_result.stderr.decode()
