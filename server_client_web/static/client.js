@@ -80,7 +80,7 @@ function sendAndRecieveMessageAi() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ message: messageToSend })
+            body: JSON.stringify({ message: messageToSend})
         })
             .then(response => response.json())
             .then(data => {
@@ -114,9 +114,15 @@ function updateDisplayedMessages() {
     
             codeElements.forEach((codeElement) => {
                 const codeLength = codeElement.textContent.length;
+                if(frictionIds[currentFriction] == 1)
+                {
+                    codeElement.style.color = 'transparent';
+                    codeElement.style.textShadow = '0px 0px 5px rgba(0,0,0,0.5)';
+                }
+                
                 if(codeLength < 20){
-                    codeElement.style.color = '#4a90e2'; 
-                    codeElement.style.textShadow = '0px 0px 0px'; 
+                //    codeElement.style.color = 'transparent'; 
+                  //  codeElement.style.textShadow = '0px 0px 5px'; 
                 }
             });
         }
@@ -175,7 +181,9 @@ function resetChat() {
         .then(data => {
             console.log(data.message); 
             localStorage.clear();
-            location.reload()
+            const displayMessagesElement = document.getElementById("displayMessages");
+            displayMessagesElement.innerHTML = "";
+            messages = [];
         })
         .catch(error => {
             console.error('Error:', error);
@@ -190,6 +198,30 @@ function setInitialTask(tasks){
     taskIds = shuffledIds;
     assignFrictions(frictionIds);
     selectTask(0, 0);
+    setAIBehaviour();
+
+}
+
+function setAIBehaviour(){
+    console.log(frictionIds)
+    fetch('/set_ai_behaviour', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ friction: frictionIds[currentFriction]})
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message); 
+            localStorage.clear();
+            const displayMessagesElement = document.getElementById("displayMessages");
+            displayMessagesElement.innerHTML = "";
+            messages = [];
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
 
 function adjustTaskList(idList) {
@@ -241,6 +273,7 @@ function selectTask(taskIndex, frictionIndex){
     resetCode();
     changeTaskTests(taskIndex);
     changeTaskChat(frictionIndex);
+    setAIBehaviour();
 }
 
 function nextTask(){
@@ -377,10 +410,11 @@ function submitUserCode() {
         console.log("Code submitted:", submittedCode);
 
         // Sending the C code to the Python intermediary server to be send to docker server and run
-        axios.post(url, { code: submittedCode, somt: code_description[0] })
+        console.log(code_description[currentTask]);
+        axios.post(url, { code: submittedCode, testsToRun: code_description[currentTask] })
             .then(response => {
                 responseString = JSON.stringify(response.data);
-                console.log(responseString)
+                console.log(responseString);
                 responseString = responseString.split('test_output')[1];
                 testArray = responseString.split('test_');
 
