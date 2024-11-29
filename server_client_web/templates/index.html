@@ -8,13 +8,12 @@
 <body>
     <div class="main-container">
         <div class="top-bar-container">
-            <div class="tasks-button-container"></div>
+            <div id="countdown">&nbsp;</div>
         </div>
         <div class="window-container">
             <!-- Window 1: Chat Window -->
             <div class="window">
                 <div class="header">Ai</div>
-
                 <div id="displayMessages"></div>
                     <div class="input-container">
                         <textarea type="text" id="messageInput" placeholder="Enter a message"></textarea>
@@ -56,6 +55,10 @@
             </div>
         </div>
     </div>
+    <div id="beginTask" className="beginTaskPrompt">
+        Are you ready for the next task?
+        <button onclick="beginTask()">Begin Task</button>
+    </div> 
 </body>
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 <script src="{{url_for('static', filename='client.js')}}"></script>

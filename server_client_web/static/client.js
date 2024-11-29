@@ -4,6 +4,9 @@ let taskTexts = ["1", "2", "3", "5"];
 let frictionIds = [0,1,2,3];
 let currentTask = 0;
 let currentFriction = 0;
+let codeCache = [];
+let chatCache = [];
+let counter;
 
 //Used to get locally stored chat with AI if any 
 const savedMessages = localStorage.getItem("chatMessages");
@@ -135,7 +138,9 @@ function resetChat() {
         .then(data => {
             console.log(data.message); 
             localStorage.clear();
-            location.reload()
+            const displayMessagesElement = document.getElementById("displayMessages");
+            displayMessagesElement.innerHTML = "";
+            messages = [];
         })
         .catch(error => {
             console.error('Error:', error);
@@ -186,13 +191,29 @@ function selectTask(taskIndex, frictionIndex){
     changeTaskText(taskIndex);
     resetCode();
     changeTaskTests(taskIndex);
-    changeTaskChat(frictionIndex);
+    changeTaskChat(taskIndex, frictionIndex);
+    countdown(45/4*60*1000);
 }
 
-function nextTask(){
-    if((currentTask + 1) < taskIds.length && (currentFriction + 1) < frictionIds.length) {
-        selectTask(++currentTask, ++currentFriction);
+function nextTask() {
+    if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
+        //End experiment
+        stopCountdown(counter);
     }
+
+    if((currentTask + 1) < taskIds.length && (currentFriction + 1) < frictionIds.length) {
+        stopCountdown(counter);
+        //Pause, make them click begin task
+        
+    }
+}
+
+function beginTask() {
+    selectTask(++currentTask, ++currentFriction);
+        if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
+            const nextTaskButton = document.getElementById("buttonNextTask");
+            nextTaskButton.textContent = "End Task";
+        }
 }
 
 function changeTaskText(index) {
@@ -204,18 +225,49 @@ function changeTaskText(index) {
     taskContainer.appendChild(taskInformation);
 }
 
-function resetCode(){
+function resetCode(taskIndex){
     const code = document.getElementById("code");
+    let prevTaskId = getTaskId[taskIndex-1];
+    codeCache[prevTaskId] = code.value;
     code.value = "";
     updateLineNumbers();
 }
 
-function changeTaskChat(index) {
-    var frictionId = getFrictionId(index);
+function changeTaskChat(taskIndex, frictionIndex) {
+    let prevFrictionId = getFrictionId(frictionIndex);
+    let prevTaskId = getTaskId[taskIndex-1];
+    
+    const displayMessagesElement = document.getElementById("displayMessages");
+    chatCache[prevTaskId] = displayMessagesElement.innerHTML;
+    resetChat();
 }
 
 function changeTaskTests(index) {
     var taskId = getTaskId(index);
+}
+
+function countdown(startTime){
+    let currentTime = startTime;
+
+    counter = setInterval(function() {
+        currentTime -= 1000;
+
+        var minutes = Math.floor((currentTime % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((currentTime % (1000 * 60)) / 1000);
+
+        document.getElementById("countdown").innerHTML = minutes + "m " + seconds + "s ";
+
+        console.log(minutes, seconds, currentTime);
+
+        if (currentTime < 0) {
+            nextTask();
+        }
+    }, 1000);
+}
+
+function stopCountdown(currentCountdown){
+    clearInterval(currentCountdown);
+    document.getElementById("countdown").innerHTML = "&nbsp;";
 }
 
 function getTaskId(index) {
