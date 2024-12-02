@@ -85,6 +85,11 @@ double parseExpression(Token* tokens, int* index) {
     return result;
 }
 
+void getExpression(char *expression, size_t size) { 
+    printf("Enter an expression: ");
+    fgets(expression, size, stdin);
+}
+
 int main() {
     char expression[100];
     printf("Enter an expression: ");

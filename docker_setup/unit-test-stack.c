@@ -4,34 +4,14 @@
 #include <string.h>
 #include <stddef.h>
 
-//extern int add(int a, int b); // This will be defined by the user-supplied code
-//extern int sub(int a, int b);
 
 void setUp(void) {
 }
 
 void tearDown(void) {
 }
-/*
-void test_add_positive() {
-    TEST_ASSERT_EQUAL(5, add(2, 3));
-}
 
-void test_add_negative() {
-    TEST_ASSERT_EQUAL(-1, add(-2, 1));
-}
-
-void test_sub_positive() {
-    TEST_ASSERT_EQUAL(5, sub(7, 2));
-}
-
-void test_sub_negative() {
-    TEST_ASSERT_EQUAL(-1, sub(1, 2));
-}
-*/
-//Stacktests
-/*
-#define MAX_SIZE 100 // Define the maximum size of the stack
+#define MAX_SIZE 100 
 #define MAX_INPUT_LENGTH 1000
 typedef struct {
     int arr[MAX_SIZE];
@@ -56,17 +36,82 @@ extern void add(Stack *s) ;
 // Subtract the top two elements (top - second top)
 extern void sub(Stack *s) ;
 
-extern void read_user_input(char* buffer)
+extern void tokenizeUserInputAndExecuteCommand(char *buffer, size_t size, Stack *s) ;
 
-void test_add_positive() {
-    Stack s;  
+
+void test_initialize(){
+    Stack s;
+    initialize(&s);
+    TEST_ASSERT_EQUAL(-1, s.top);
+}
+
+void test_isFull_true(){
+    Stack s; 
+    initialize(&s);
+    for(int i = 0; i < MAX_SIZE; i++){
+        push(&s, 20);
+    }
+    TEST_ASSERT_EQUAL(1, isFull(&s));
+}
+
+void test_isFull_false(){
+    Stack s; 
     initialize(&s);
     push(&s, 20);
-    TEST_ASSERT(s.arr[0] == 20);
+    TEST_ASSERT_EQUAL(0, isFull(&s));
 }
-*/
-void test_read_user_input(){
-    const char *mock_input = "Test input\n";
+
+void test_isEmpty_true(){
+    Stack s; 
+    initialize(&s);
+    TEST_ASSERT_EQUAL(1, isEmpty(&s));
+}
+
+void test_isEmpty_false(){
+    Stack s; 
+    initialize(&s);
+    push(&s, 20);
+    TEST_ASSERT_EQUAL(0, isEmpty(&s));
+}
+
+void test_pop(){
+    Stack s; 
+    initialize(&s);
+    push(&s, 20);
+    pop(&s);
+    TEST_ASSERT_EQUAL(1, isEmpty(&s));
+}
+
+void test_pop_top_index(){
+    Stack s; 
+    initialize(&s);
+    push(&s, 20);
+    pop(&s);
+    TEST_ASSERT_EQUAL(-1, s.top);
+}
+
+void test_add(){
+    Stack s; 
+    initialize(&s);
+    push(&s, 20);
+    push(&s, 30);
+    add(&s);
+    TEST_ASSERT_EQUAL(50, s.arr[0]);
+}
+
+void test_sub(){
+    Stack s; 
+    initialize(&s);
+    push(&s, 20);
+    push(&s, 30);
+    sub(&s);
+    TEST_ASSERT_EQUAL(-10, s.arr[0]);
+}
+
+void test_tokenizeUserInputAndExecuteCommand_push(){
+    Stack s; 
+    initialize(&s);
+    const char *mock_input = "[\"push 30\", \"push 50\"";
     FILE *mock_stdin = fmemopen((void *)mock_input, strlen(mock_input), "r");
     TEST_ASSERT_NOT_NULL_MESSAGE(mock_stdin, "Failed to create mock stdin");
     
@@ -77,28 +122,95 @@ void test_read_user_input(){
     memset(buffer, 0, sizeof(buffer));
 
     // Call the function to test
-    read_user_input(buffer, sizeof(buffer));
-    
+    tokenizeUserInputAndExecuteCommand(buffer, sizeof(buffer), &s);
     // Restore original stdin
     stdin = original_stdin;
     fclose(mock_stdin);
-
     // Assert expected behavior
-    TEST_ASSERT_EQUAL_STRING("Test input\n", buffer);
+    TEST_ASSERT_EQUAL(30, s.arr[0]);
+    TEST_ASSERT_EQUAL(50, s.arr[1]);
 }
 
+void test_tokenizeUserInputAndExecuteCommand_pop(){
+    Stack s; 
+    initialize(&s);
+    const char *mock_input = "[\"push 30\", \"pop\"";
+    FILE *mock_stdin = fmemopen((void *)mock_input, strlen(mock_input), "r");
+    TEST_ASSERT_NOT_NULL_MESSAGE(mock_stdin, "Failed to create mock stdin");
+    
+    // Replace stdin temporarily
+    FILE *original_stdin = stdin;
+    stdin = mock_stdin;
+    char buffer[50];
+    memset(buffer, 0, sizeof(buffer));
+
+    // Call the function to test
+    tokenizeUserInputAndExecuteCommand(buffer, sizeof(buffer), &s);
+    // Restore original stdin
+    stdin = original_stdin;
+    fclose(mock_stdin);
+    // Assert expected behavior
+    TEST_ASSERT_EQUAL(1, isEmpty(&s));
+}
+
+void test_tokenizeUserInputAndExecuteCommand_add(){
+    Stack s; 
+    initialize(&s);
+    const char *mock_input = "[\"push 30\", \"push 50\", \"add\"";
+    FILE *mock_stdin = fmemopen((void *)mock_input, strlen(mock_input), "r");
+    TEST_ASSERT_NOT_NULL_MESSAGE(mock_stdin, "Failed to create mock stdin");
+    
+    // Replace stdin temporarily
+    FILE *original_stdin = stdin;
+    stdin = mock_stdin;
+    char buffer[50];
+    memset(buffer, 0, sizeof(buffer));
+
+    // Call the function to test
+    tokenizeUserInputAndExecuteCommand(buffer, sizeof(buffer), &s);
+    // Restore original stdin
+    stdin = original_stdin;
+    fclose(mock_stdin);
+    // Assert expected behavior
+    TEST_ASSERT_EQUAL(80, s.arr[0]);
+}
+
+void test_tokenizeUserInputAndExecuteCommand_sub(){
+    Stack s; 
+    initialize(&s);
+    const char *mock_input = "[\"push 30\", \"push 50\", \"sub\"";
+    FILE *mock_stdin = fmemopen((void *)mock_input, strlen(mock_input), "r");
+    TEST_ASSERT_NOT_NULL_MESSAGE(mock_stdin, "Failed to create mock stdin");
+    
+    // Replace stdin temporarily
+    FILE *original_stdin = stdin;
+    stdin = mock_stdin;
+    char buffer[50];
+    memset(buffer, 0, sizeof(buffer));
+
+    // Call the function to test
+    tokenizeUserInputAndExecuteCommand(buffer, sizeof(buffer), &s);
+    // Restore original stdin
+    stdin = original_stdin;
+    fclose(mock_stdin);
+    // Assert expected behavior
+    TEST_ASSERT_EQUAL(-20, s.arr[0]);
+}
 
 int main(void) {
     UNITY_BEGIN(); 
-   // RUN_TEST(test_add_positive);   
-    RUN_TEST(test_read_user_input);
-    RUN_TEST(test_read_user_input);
-    RUN_TEST(test_read_user_input);
-    RUN_TEST(test_read_user_input);
-    RUN_TEST(test_read_user_input);
-    RUN_TEST(test_read_user_input);
-    RUN_TEST(test_read_user_input);
-    RUN_TEST(test_read_user_input);
-
+    RUN_TEST(test_initialize);
+    RUN_TEST(test_isFull_true);
+    RUN_TEST(test_isFull_false);
+    RUN_TEST(test_isEmpty_true);
+    RUN_TEST(test_isEmpty_false);
+    RUN_TEST(test_pop);
+    RUN_TEST(test_pop_top_index);
+    RUN_TEST(test_add);
+    RUN_TEST(test_sub);
+    RUN_TEST(test_tokenizeUserInputAndExecuteCommand_push);
+    RUN_TEST(test_tokenizeUserInputAndExecuteCommand_pop);
+    RUN_TEST(test_tokenizeUserInputAndExecuteCommand_add);
+    RUN_TEST(test_tokenizeUserInputAndExecuteCommand_sub);
     return UNITY_END();  // End Unity Test Framework
 }

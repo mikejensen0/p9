@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <stddef.h>
 
 #define MAX_SIZE 100 // Define the maximum size of the stack
 #define MAX_INPUT_LENGTH 1000
@@ -73,6 +74,48 @@ void sub(Stack *s) {
 
     push(s, op1 - op2);
 }
+
+void tokenizeUserInputAndExecuteCommand(char *buffer, size_t size, Stack *s) {
+    printf("Enter input: ");
+    fgets(buffer, size, stdin);
+    char *token;
+
+    // Remove the square brackets and quotes
+    for (int i = 0; buffer[i]; i++) {
+        if (buffer[i] == '[' || buffer[i] == ']' || buffer[i] == '\"') {
+            buffer[i] = ' ';
+        }
+    }
+
+    // Tokenize the input by commas
+    token = strtok(buffer, ",");
+    while (token != NULL) {
+        // Trim leading and trailing spaces
+        while (*token == ' ') token++;
+        char *end = token + strlen(token) - 1;
+        while (end > token && *end == ' ') {
+            *end = '\0';
+            end--;
+        }
+
+    if (strncmp(token, "push", 4) == 0) {
+        // Extract the number after "push"
+        int value = atoi(token + 5); // Assume valid input like "push 20"
+        push(s, value);
+    } else if (strcmp(token, "pop") == 0){
+        pop(s);
+    }else if (strcmp(token, "add") == 0) {
+        add(s);
+    } else if (strcmp(token, "sub") == 0) {
+        sub(s);
+    }else  {
+        printf("Unknown command: %s\n", token);
+    }
+        // Move to the next command
+        token = strtok(NULL, ",");
+    }
+}
+
 
 int main() {
     Stack s;
