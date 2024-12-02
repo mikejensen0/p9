@@ -155,3 +155,43 @@ int main() {
 
     return 0;
 }
+
+void readUserDefinedGrid(char *buffer, size_t size){
+    printf("Enter the 2D array in the format [[1,2,3],[4,5,6],[7,8,9]]:\n");
+    fgets(buffer, size, stdin);
+}
+
+int parseUserDefinedGrid(int row_size, int col_size, char* input){
+    int row = 0, col = 0;
+
+    // Dynamically allocate memory for the 2D grid
+    int **realArray = (int **)malloc(row_size * sizeof(int *));
+    for (int i = 0; i < row_size; i++) {
+        realArray[i] = (int *)malloc(col_size * sizeof(int));
+    }
+
+    // Parse the input string
+    char *ptr = strtok(input, "[],"); // Split by '[', ']', and ','
+    while (ptr != NULL) {
+        if (row < row_size && col < col_size) {
+            realArray[row][col] = atoi(ptr); // Convert token to integer
+            col++;
+            if (col == col_size) { // Move to the next row when COLS is filled
+                col = 0;
+                row++;
+            }
+        }
+        ptr = strtok(NULL, "[],"); // Get the next token
+    }
+
+    // Call the shortestPath function with the dynamically allocated array
+    int shortest_path = shortestPath(realArray, row_size, col_size);
+
+    // Free dynamically allocated memory
+    for (int i = 0; i < row_size; i++) {
+        free(realArray[i]);
+    }
+    free(realArray);
+
+    return shortest_path;
+}
