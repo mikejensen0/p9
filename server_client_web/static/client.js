@@ -120,9 +120,9 @@ function updateDisplayedMessages() {
                     codeElement.style.textShadow = '0px 0px 5px rgba(0,0,0,0.5)';
                 }
                 
-                if(codeLength < 20){
-                //    codeElement.style.color = 'transparent'; 
-                  //  codeElement.style.textShadow = '0px 0px 5px'; 
+                if(codeLength < 30){
+                    codeElement.style.color = '#4a90e2'; 
+                    codeElement.style.textShadow = '0px 0px 0px'; 
                 }
             });
         }

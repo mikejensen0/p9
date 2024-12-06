@@ -18,7 +18,6 @@ typedef enum {
   LOCKED,
 } DoorState;
 
-
 extern DoorState transition(const char* action);
 
 extern void printState();
