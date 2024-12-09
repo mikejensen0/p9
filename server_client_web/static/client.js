@@ -204,16 +204,19 @@ function nextTask() {
     if((currentTask + 1) < taskIds.length && (currentFriction + 1) < frictionIds.length) {
         stopCountdown(counter);
         //Pause, make them click begin task
-        
+        const beginTaskContainer = document.getElementById("begin-task-container");
+        beginTaskContainer.classList.add('active');
     }
 }
 
 function beginTask() {
     selectTask(++currentTask, ++currentFriction);
-        if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
-            const nextTaskButton = document.getElementById("buttonNextTask");
-            nextTaskButton.textContent = "End Task";
-        }
+    if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
+        const nextTaskButton = document.getElementById("buttonNextTask");
+        nextTaskButton.textContent = "End Task";
+    }
+    const beginTaskContainer = document.getElementById("begin-task-container");
+    beginTaskContainer.classList.remove('active');
 }
 
 function changeTaskText(index) {
@@ -256,8 +259,6 @@ function countdown(startTime){
         var seconds = Math.floor((currentTime % (1000 * 60)) / 1000);
 
         document.getElementById("countdown").innerHTML = minutes + "m " + seconds + "s ";
-
-        console.log(minutes, seconds, currentTime);
 
         if (currentTime < 0) {
             nextTask();
@@ -319,34 +320,43 @@ function toggleContent(element, selectedTestElement, testObj) {
 }
 
 // Helper function for submitUserCode()
-function showTestStatuses(testDetails) {
-    let first = true;
+function showTestStatuses(testDetails, fail) {
+    if(fail){
+        const testResultsContainerElement = document.getElementById("testResults");
+        testResultsContainerElement.innerHTML = "";
+        const testResultsHeaderElement = document.createElement("h1");
+        testResultsHeaderElement.innerText = "Code Error"; 
+        testResultsHeaderElement.style = "color: red";
+        testResultsContainerElement.appendChild(testResultsHeaderElement);
+    }
+    else{
+        let first = true;
 
-    const testResultsContainerElement = document.getElementById("testResults");
-    testResultsContainerElement.innerHTML = "";
-    const testResultsHeaderElement = document.createElement("h1");
-    const testResultItemsElement = document.createElement("div");
-    const selectedTestElement = document.createElement("div");
-    testResultItemsElement.className = "testResults";
-    //testResultsHeaderElement.innerText = "Test Results"; 
-    testResultsContainerElement.appendChild(testResultsHeaderElement);
-    testDetails.forEach((testObj) => {
-        const testResultElement = document.createElement("div");
-        testResultElement.className = "testResult";
-        testResultElement.innerText = testObj.name;
-        testResultElement.classList.add(testObj.status);
-        if(testObj.status === 'FAIL'){
-            testResultElement.onclick = () => toggleContent(testResultElement, selectedTestElement, testObj);
-        }
-        testResultItemsElement.appendChild(testResultElement);
-        testResultsContainerElement.appendChild(testResultItemsElement);
-        testResultsContainerElement.appendChild(selectedTestElement);
-        if(testObj.status === 'FAIL' && first) {
-            testResultElement.click();
-            first = false;
-        }
-    });
-    testResultItemsElement.scrollTop = testResultItemsElement.scrollHeight;
+        const testResultsContainerElement = document.getElementById("testResults");
+        testResultsContainerElement.innerHTML = "";
+        const testResultsHeaderElement = document.createElement("h1");
+        const testResultItemsElement = document.createElement("div");
+        const selectedTestElement = document.createElement("div");
+        testResultItemsElement.className = "testResults";
+        testResultsContainerElement.appendChild(testResultsHeaderElement);
+        testDetails.forEach((testObj) => {
+            const testResultElement = document.createElement("div");
+            testResultElement.className = "testResult";
+            testResultElement.innerText = testObj.name;
+            testResultElement.classList.add(testObj.status);
+            if(testObj.status === 'FAIL'){
+                testResultElement.onclick = () => toggleContent(testResultElement, selectedTestElement, testObj);
+            }
+            testResultItemsElement.appendChild(testResultElement);
+            testResultsContainerElement.appendChild(testResultItemsElement);
+            testResultsContainerElement.appendChild(selectedTestElement);
+            if(testObj.status === 'FAIL' && first) {
+                testResultElement.click();
+                first = false;
+            }
+        });
+        testResultItemsElement.scrollTop = testResultItemsElement.scrollHeight;
+    }
 }
 
 function toggleTasksCode(selected) {
@@ -374,31 +384,36 @@ function submitUserCode() {
         // Sending the C code to the Python intermediary server to be send to docker server and run
         axios.post(url, { code: submittedCode })
             .then(response => {
-                responseString = JSON.stringify(response.data);
-                responseString = responseString.split('test_output')[1];
-                testArray = responseString.split('test_');
-
-                var i = 1;
-                var allTestsDetails = [];
-                while(i < testArray.length){
-                    var test = testArray[i];
-                    var testDetails = test.split(':');
-                    let testObj = {
-                        name: testDetails[0],
-                        status: testDetails[1].split('\\')[0],
-                    };
-
-                    if (testObj.status === 'FAIL') {
-                        var testResults = testDetails[2].split('\\')[0];
-                        var testResultsFixed = testResults.replace('Expected ', '').replace(' Was', '').split(' ');
-                        testResultsFixed.shift();
-                        testObj.expected = testResultsFixed[0];
-                        testObj.actual = testResultsFixed[1];
+                try{
+                    responseString = JSON.stringify(response.data);
+                    responseString = responseString.split('test_output')[1];
+                    testArray = responseString.split('test_');
+    
+                    var i = 1;
+                    var allTestsDetails = [];
+                    while(i < testArray.length){
+                        var test = testArray[i];
+                        var testDetails = test.split(':');
+                        let testObj = {
+                            name: testDetails[0],
+                            status: testDetails[1].split('\\')[0],
+                        };
+    
+                        if (testObj.status === 'FAIL') {
+                            var testResults = testDetails[2].split('\\')[0];
+                            var testResultsFixed = testResults.replace('Expected ', '').replace(' Was', '').split(' ');
+                            testResultsFixed.shift();
+                            testObj.expected = testResultsFixed[0];
+                            testObj.actual = testResultsFixed[1];
+                        }
+                        allTestsDetails.push(testObj);
+                        i++;
                     }
-                    allTestsDetails.push(testObj);
-                    i++;
+                    showTestStatuses(allTestsDetails, false);
                 }
-                showTestStatuses(allTestsDetails);
+                catch(e){
+                    showTestStatuses(null, true);
+                }
                 
             })
     }

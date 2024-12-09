@@ -38,7 +38,6 @@
     color: white;
     position: sticky;
     top: 0; /* Stick to the top of the viewport */
-    z-index: 1000;
 }
 
 /* Styling for each window */
@@ -332,4 +331,42 @@ button:active {
 
 #code-container {
   height: 100%;
+}
+
+.backgroundBlur{
+    display: none;
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    backdrop-filter: blur(10px);
+}
+
+.backgroundBlur.active{
+    display: block;
+}
+
+.beginTaskPrompt {
+    background-color: white;
+    height: 125px;
+    width: 250px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #333;
+    border-radius: 8px;
+    box-shadow: 5px 5px 5px #333;
+}
+
+.beginTaskPrompt > p{
+    position: relative;
+    top: -15px;
+    left: 10px;
+}
+
+.beginTaskPrompt > button {
+    position: relative;
+    top: 30px;
+    left: 50%;
+    transform: translate(-50%, 0);
 }

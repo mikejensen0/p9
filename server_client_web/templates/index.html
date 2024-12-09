@@ -55,10 +55,12 @@
             </div>
         </div>
     </div>
-    <div id="beginTask" className="beginTaskPrompt">
-        Are you ready for the next task?
-        <button onclick="beginTask()">Begin Task</button>
-    </div> 
+    <div id="begin-task-container" class="backgroundBlur">
+        <div  class="beginTaskPrompt">
+            <p>Are you ready for the next task?</p>
+            <button onclick="beginTask()">Begin Task</button>
+        </div> 
+    </div>
 </body>
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 <script src="{{url_for('static', filename='client.js')}}"></script>
