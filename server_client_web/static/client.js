@@ -1,5 +1,5 @@
 let messages = [];
-let taskIds = [0,1,2,3]; 
+
 const stackTask = `Make a simple stack implementation in c that supports basic operations PUSH, POP, ADD,  SUB.
 - PUSH is used to PUSH a number onto top of the stack and POP is used to remove the top number from the stack.
 
@@ -39,6 +39,50 @@ const navigationTask = ` Create a simple path-finding algorithm in c that finds 
 -  An example could look like this [[2,1,1], [0, 1, 1],[0, 0,2]] where 2 represents the end and starting point, 1 represents a blocked path and 0 represents a traversable path
 -  This specific example should then give us a minimum path of 4.
 `
+
+const stackTests = [{name: 'test_initialize', status: 'FAIL', expected: -1}, 
+                    {name: 'test_isFull_true', status: 'FAIL', expected: 1},
+                    {name: 'test_isFull_false', status: 'FAIL', expected: 0},
+                    {name: 'test_isEmpty_true', status: 'FAIL', expected: 1},
+                    {name: 'test_isEmpty_false', status: 'FAIL', expected: 0},
+                    {name: 'test_pop', status: 'FAIL', expected: 1},
+                    {name: 'test_pop_top_index', status: 'FAIL', expected: -1},
+                    {name: 'test_add', status: 'FAIL', expected: 50},
+                    {name: 'test_sub', status: 'FAIL', expected: -10},
+                    {name: 'test_tokenizeUserInputAndExecuteCommand_push', status: 'FAIL', expected: 30},
+                    {name: 'test_tokenizeUserInputAndExecuteCommand_pop', status: 'FAIL', expected: 1},
+                    {name: 'test_tokenizeUserInputAndExecuteCommand_add', status: 'FAIL', expected: 80},
+                    {name: 'test_tokenizeUserInputAndExecuteCommand_sub', status: 'FAIL', expected: -20},
+];
+
+const stateMachineTests = [ {name: 'test_transition_lock', status: 'FAIL', expected: 2},
+                            {name: 'test_transition_open', status: 'FAIL', expected: 0},
+                            {name: 'test_transition_close', status: 'FAIL', expected: 1},
+                            {name: 'test_transition_unlock', status: 'FAIL', expected: 1},
+                            {name: 'test_extended_transitions', status: 'FAIL', expected: 2},
+
+];
+
+const expressionParserTests = [ {name: 'test_simple_addition', status: 'FAIL', expected: 4},
+                                {name: 'test_advanced_addition', status: 'FAIL', expected: 22},
+                                {name: 'test_simple_subtraction', status: 'FAIL', expected: 0},
+                                {name: 'test_advanced_subtraction', status: 'FAIL', expected: -18},
+                                {name: 'test_simple_multiplication', status: 'FAIL', expected: 9},
+                                {name: 'test_advanced_multiplication', status: 'FAIL', expected: 600},
+                                {name: 'test_simple_division', status: 'FAIL', expected: 1},
+                                {name: 'test_advanced_divison', status: 'FAIL', expected: 1},
+                                {name: 'test_order_of_operations', status: 'FAIL', expected: 8},
+                                {name: 'test_parameters', status: 'FAIL', expected: 12},
+];
+
+const navigationTests = [   {name: 'test_path_on_3x3_grid', status: 'FAIL', expected: 4},
+                            {name: 'test_path_on_4x4_grid', status: 'FAIL', expected: 9},
+                            {name: 'test_path_on_4x3_grid', status: 'FAIL', expected: 8},
+                            {name: 'test_path_on_3x4_grid', status: 'FAIL', expected: 7},
+];
+
+let taskIds = [0,1,2,3]; 
+let testDetailsArray = [stackTests, stateMachineTests, expressionParserTests, navigationTests];
 let taskTexts = [stackTask, stateMachineTask, expressionParserTask, navigationTask];
 let code_description = ["stack", "state", "expression", "nav"];
 let frictionIds = [0,1,2,3];
@@ -197,15 +241,14 @@ function setInitialTask(tasks){
     var shuffledIds = randomiser(tasks);
     taskTexts = adjustTaskList(shuffledIds);
     code_description = adjustthisList(shuffledIds);
-    console.log(code_description)
     taskIds = shuffledIds;
     assignFrictions(frictionIds);
-    selectTask(0, 0);
-    setAIBehaviour();
-
+    selectTask(0);
+    setAIBehaviour(0);
+    showTests(0);
 }
 
-function setAIBehaviour(){
+function setAIBehaviour(taskIndex){
     console.log(frictionIds)
     fetch('/set_ai_behaviour', {
         method: 'POST',
@@ -219,9 +262,9 @@ function setAIBehaviour(){
             console.log(data.message); 
             localStorage.clear();
             const displayMessagesElement = document.getElementById("displayMessages");
+            let prevTaskId = getTaskId(taskIndex-1);
             chatCache[prevTaskId] = displayMessagesElement.innerHTML;
-            displayMessagesElement.innerHTML = "";
-            messages = [];
+            resetChat();
         })
         .catch(error => {
             console.error('Error:', error);
@@ -266,18 +309,16 @@ function randomiser(list){
 }
 
 function assignFrictions(frictions){
-    randomisedFrictions = randomiser(frictions.slice(1));
-    randomisedFrictions.unshift(frictions[0]);
-    frictionIds = randomisedFrictions;
+    frictionIds = randomiser(frictions);
 }
 
-function selectTask(taskIndex, frictionIndex){
+function selectTask(taskIndex){
     toggleTasksCode('tasks');
     changeTaskText(taskIndex);
     resetCode();
-    changeTaskTests(taskIndex);
     countdown(45/4*60*1000);
-    setAIBehaviour();
+    setAIBehaviour(taskIndex);
+    showTests(taskIndex);
 }
 
 function nextTask() {
@@ -295,7 +336,7 @@ function nextTask() {
 }
 
 function beginTask() {
-    selectTask(++currentTask, ++currentFriction);
+    selectTask(++currentTask);
     if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
         const nextTaskButton = document.getElementById("buttonNextTask");
         nextTaskButton.textContent = "End Task";
@@ -313,20 +354,47 @@ function changeTaskText(index) {
     taskContainer.appendChild(taskInformation);
 }
 
+function showTests(taskIndex) {
+    let taskId = getTaskId(taskIndex);
+    let testDetails = testDetailsArray[taskId];
+
+    const testResultsContainerElement = document.getElementById("testResults");
+    testResultsContainerElement.innerHTML = "";
+    const testResultsHeaderElement = document.createElement("h1");
+    const testResultItemsElement = document.createElement("div");
+    const selectedTestElement = document.createElement("div");
+    testResultItemsElement.className = "testResults";
+    testResultsContainerElement.appendChild(testResultsHeaderElement);
+    testDetails.forEach((testObj) => {
+        const testResultElement = document.createElement("div");
+        testResultElement.className = "testResult";
+        testResultElement.innerText = testObj.name;
+        testResultElement.classList.add(testObj.status);
+        if(testObj.status === 'FAIL'){
+            testResultElement.onclick = () => toggleContent(testResultElement, selectedTestElement, testObj);
+        }
+        testResultItemsElement.appendChild(testResultElement);
+        testResultsContainerElement.appendChild(testResultItemsElement);
+        testResultsContainerElement.appendChild(selectedTestElement);
+    });
+    testResultItemsElement.scrollTop = testResultItemsElement.scrollHeight;
+}
+
 function resetCode(taskIndex){
     const code = document.getElementById("code");
-    let prevTaskId = getTaskId[taskIndex-1];
+    let prevTaskId = getTaskId(taskIndex-1);
     codeCache[prevTaskId] = code.value;
     code.value = "";
     updateLineNumbers();
 }
 
-function changeTaskTests(index) {
-    var taskId = getTaskId(index);
-}
-
 function countdown(startTime){
     let currentTime = startTime;
+
+    var minutes = Math.floor((currentTime % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((currentTime % (1000 * 60)) / 1000);
+
+    document.getElementById("countdown").innerHTML = minutes + "m " + seconds + "s ";
 
     counter = setInterval(function() {
         currentTime -= 1000;
