@@ -1,6 +1,46 @@
 let messages = [];
 let taskIds = [0,1,2,3]; 
-let taskTexts = ["1", "2", "3", "5"];
+const stackTask = `Make a simple stack implementation in c that supports basic operations PUSH, POP, ADD,  SUB.
+- PUSH is used to PUSH a number onto top of the stack and POP is used to remove the top number from the stack.
+
+- ADD does addition with the top and second top element.
+- SUB functions the same but does subtraction. 
+- Input to the stack should be given by an outside user in the form of inputs like this [“PUSH 20”, “PUSH 30”, “ADD”, PUSH 20] 
+which should then give us a stack with 20 as the top element and 50 as the second element on the stack. 
+- After executing the operations there should be some output that shows how the stack currently looks so for example [50, 20] (or [20, 50]?) 
+`
+const stateMachineTask = `Make a simple state machine simulating a door in c. It should have the states OPENED, CLOSED, and LOCKED. 
+It should have the following transitions: 
+- OPEN->CLOSE, puts us in state CLOSED	
+
+- CLOSE->LOCK, puts us in state LOCKED
+- LOCK->UNLOCK, puts us in state CLOSED
+- CLOSE->OPEN, puts us in state OPENED 
+- Transitions should be requested from the user to execute given in the following format [“OPEN”, “CLOSE”, “LOCK, “UNLOCK”]. 
+If an invalid transition is given the program inform of this upon execution. 
+`
+
+const expressionParserTask = ` Create a simple expression parser in C to evaluate mathematical expressions.
+ It should support basic operations: 
+ - Addition 
+
+ - Subtraction
+ - Multiplication 
+ - Division 
+ - Parentheses 
+ - It should follow the order of operations rules in mathematics.
+ -  It should be able to support any number of operands and operators. 
+ - 2 + 4 * 4 should evaluate to 18 and (2 + 4) * 4 should evaluate to 24
+`
+const navigationTask = ` Create a simple path-finding algorithm in c that finds the quickest path from one starting point to an endpoint in a grid. 
+- If no path exists the program should notify of this
+
+- The program should receive the grid by user input in the form of a 2D array
+-  An example could look like this [[2,1,1], [0, 1, 1],[0, 0,2]] where 2 represents the end and starting point, 1 represents a blocked path and 0 represents a traversable path
+-  This specific example should then give us a minimum path of 4.
+`
+let taskTexts = [stackTask, stateMachineTask, expressionParserTask, navigationTask];
+let code_description = ["stack", "state", "expression", "nav"];
 let frictionIds = [0,1,2,3];
 let currentTask = 0;
 let currentFriction = 0;
@@ -43,7 +83,7 @@ function sendAndRecieveMessageAi() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ message: messageToSend })
+            body: JSON.stringify({ message: messageToSend})
         })
             .then(response => response.json())
             .then(data => {
@@ -77,7 +117,13 @@ function updateDisplayedMessages() {
     
             codeElements.forEach((codeElement) => {
                 const codeLength = codeElement.textContent.length;
-                if(codeLength < 20){
+                if(frictionIds[currentFriction] == 1)
+                {
+                    codeElement.style.color = 'transparent';
+                    codeElement.style.textShadow = '0px 0px 5px rgba(0,0,0,0.5)';
+                }
+                
+                if(codeLength < 30){
                     codeElement.style.color = '#4a90e2'; 
                     codeElement.style.textShadow = '0px 0px 0px'; 
                 }
@@ -150,9 +196,36 @@ function resetChat() {
 function setInitialTask(tasks){
     var shuffledIds = randomiser(tasks);
     taskTexts = adjustTaskList(shuffledIds);
+    code_description = adjustthisList(shuffledIds);
+    console.log(code_description)
     taskIds = shuffledIds;
     assignFrictions(frictionIds);
-    selectTask(0);
+    selectTask(0, 0);
+    setAIBehaviour();
+
+}
+
+function setAIBehaviour(){
+    console.log(frictionIds)
+    fetch('/set_ai_behaviour', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ friction: frictionIds[currentFriction]})
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message); 
+            localStorage.clear();
+            const displayMessagesElement = document.getElementById("displayMessages");
+            chatCache[prevTaskId] = displayMessagesElement.innerHTML;
+            displayMessagesElement.innerHTML = "";
+            messages = [];
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
 
 function adjustTaskList(idList) {
@@ -160,6 +233,18 @@ function adjustTaskList(idList) {
     let i = 0;
 
     taskTexts.forEach((task) => {
+        adjustedTaskList[idList[i]] = task;
+        i++;
+    })
+
+    return adjustedTaskList;
+}
+
+function adjustthisList(idList) {
+    let adjustedTaskList = [];
+    let i = 0;
+
+    code_description.forEach((task) => {
         adjustedTaskList[idList[i]] = task;
         i++;
     })
@@ -191,8 +276,8 @@ function selectTask(taskIndex, frictionIndex){
     changeTaskText(taskIndex);
     resetCode();
     changeTaskTests(taskIndex);
-    changeTaskChat(taskIndex, frictionIndex);
     countdown(45/4*60*1000);
+    setAIBehaviour();
 }
 
 function nextTask() {
@@ -234,15 +319,6 @@ function resetCode(taskIndex){
     codeCache[prevTaskId] = code.value;
     code.value = "";
     updateLineNumbers();
-}
-
-function changeTaskChat(taskIndex, frictionIndex) {
-    let prevFrictionId = getFrictionId(frictionIndex);
-    let prevTaskId = getTaskId[taskIndex-1];
-    
-    const displayMessagesElement = document.getElementById("displayMessages");
-    chatCache[prevTaskId] = displayMessagesElement.innerHTML;
-    resetChat();
 }
 
 function changeTaskTests(index) {
@@ -382,7 +458,8 @@ function submitUserCode() {
         console.log("Code submitted:", submittedCode);
 
         // Sending the C code to the Python intermediary server to be send to docker server and run
-        axios.post(url, { code: submittedCode })
+        console.log(code_description[currentTask]);
+        axios.post(url, { code: submittedCode, testsToRun: code_description[currentTask] })
             .then(response => {
                 try{
                     responseString = JSON.stringify(response.data);
