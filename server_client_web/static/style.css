@@ -347,6 +347,7 @@ button:active {
 }
 
 .beginTaskPrompt {
+    display: none;
     background-color: white;
     height: 125px;
     width: 250px;
@@ -357,6 +358,10 @@ button:active {
     border: 1px solid #333;
     border-radius: 8px;
     box-shadow: 5px 5px 5px #333;
+}
+
+.beginTaskPrompt.active {
+    display: block;
 }
 
 .beginTaskPrompt > p{

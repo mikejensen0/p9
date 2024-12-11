@@ -191,7 +191,6 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
         console.log("called resetChat");
         resetChat();
-
     }
 });
 
@@ -212,8 +211,8 @@ function resetChatFromButton() {
     let userresponse = confirm("This will reset your chat. Proceed?");
     if (userresponse) {
         const displayMessagesElement = document.getElementById("displayMessages");
-        let prevTaskId = getTaskId(currentTask);
-        chatCache[currentTask-1] += displayMessagesElement.innerHTML + "CHAT WAS RESET";
+        let taskId = getTaskId(currentTask);
+        chatCache[taskId] += displayMessagesElement.innerHTML + "CHAT WAS RESET";
         resetChat();
     }
     else {
@@ -234,7 +233,7 @@ function resetChat() {
             localStorage.clear();
             const displayMessagesElement = document.getElementById("displayMessages");
             displayMessagesElement.innerHTML = "";
-            messages = []; 
+            messages = [];
         })
         .catch(error => {
             console.error('Error:', error);
@@ -248,12 +247,11 @@ function setInitialTask(tasks){
     taskIds = shuffledIds;
     assignFrictions(frictionIds);
     selectTask(0);
-    //setAIBehaviour(0);
-    //showTests(0);
+    setAIBehaviour(0);
+    showTests(0);
 }
 
 function setAIBehaviour(taskIndex){
-    console.log(frictionIds);
     fetch('/set_ai_behaviour', {
         method: 'POST',
         headers: {
@@ -266,7 +264,7 @@ function setAIBehaviour(taskIndex){
             console.log(data.message); 
             localStorage.clear();
             const displayMessagesElement = document.getElementById("displayMessages");
-            let prevTaskId = getTaskId(taskIndex);
+            let prevTaskId = getTaskId(taskIndex-1);
             chatCache[prevTaskId] += displayMessagesElement.innerHTML;
             resetChat();
         })
@@ -329,6 +327,18 @@ function nextTask() {
     if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
         //End experiment
         stopCountdown(counter);
+        //Blur
+        const beginTaskContainer = document.getElementById('begin-task-container');
+        beginTaskContainer.classList.add('active');
+        const beginTaskPromptContainer = document.getElementsByClassName('beginTaskPrompt')[0];
+        beginTaskPromptContainer.classList.remove('active');
+
+        //Cache
+        const code = document.getElementById("code");
+        let taskId = getTaskId(currentTask);
+        const chat = document.getElementById('displayMessages');
+        codeCache[taskId] = code.value;
+        chatCache[taskId] += displayMessagesElement.innerHTML;
         
         fetch('/write_to_file', {
             method: 'POST',
@@ -401,8 +411,8 @@ function showTests(taskIndex) {
 
 function resetCode(taskIndex){
     const code = document.getElementById("code");
-    let prevTaskId = getTaskId(taskIndex);
-    codeCache[taskIndex-1] = code.value;
+    let prevTaskId = getTaskId(taskIndex-1);
+    codeCache[prevTaskId] = code.value;
     code.value = "";
     updateLineNumbers();
 }
