@@ -336,7 +336,7 @@ function nextTask() {
         //Cache
         const code = document.getElementById("code");
         let taskId = getTaskId(currentTask);
-        const chat = document.getElementById('displayMessages');
+        const displayMessagesElement = document.getElementById('displayMessages');
         codeCache[taskId] = code.value;
         chatCache[taskId] += displayMessagesElement.innerHTML;
         
@@ -345,7 +345,7 @@ function nextTask() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ codeArray: codeCache, chatArray: chatCache })
+            body: JSON.stringify({ codeArray: codeCache, chatArray: chatCache, frictionArray: frictionIds })
         })
             .then(response => response.json())
             .then(data => {
@@ -555,7 +555,6 @@ function submitUserCode() {
         console.log("Code submitted:", submittedCode);
 
         // Sending the C code to the Python intermediary server to be send to docker server and run
-        console.log(code_description[currentTask]);
         axios.post(url, { code: submittedCode, testsToRun: code_description[currentTask] })
             .then(response => {
                 try{

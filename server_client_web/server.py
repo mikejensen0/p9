@@ -119,9 +119,32 @@ def write_to_file():
     data = request.json
     user_code = data.get('codeArray')
     ai_chat = data.get('chatArray')
-    print(user_code)
-    print(ai_chat)
+    active_friction = data.get('frictionArray')
+    print(active_friction)
+
+    with open('data/test1.txt', 'w') as file:
+        i = 0 
+        
+        while i < 4:
+            if active_friction[i] == 0:
+                friction = "base"
+            elif active_friction[i] == 1:
+                friction = "blur"
+            elif active_friction[i] == 2:
+                friction = "mult_response"
+            elif active_friction[i] == 3:
+                friction = "unfinish_code"
+            else:
+                raise Exception("friction not supported")
+
+            file.write(f"Friction: {friction} \n")
+            file.write("Chat for task:\n\n")
+            file.write(f"{ai_chat[i]}\n\n")
+            file.write("Code for task:\n\n")
+            file.write(f"{user_code[i]}\n\n")
+            i += 1
     return jsonify({"message": "Wrote to file"})
+
 @app.route('/submit_code_intermediary', methods=['POST'])
 def submit_code_intermediary():
     data = request.json
