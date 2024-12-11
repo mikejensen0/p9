@@ -152,11 +152,17 @@ function updateDisplayedMessages() {
         const userMessageElement = document.createElement("div");
         userMessageElement.innerText = msgObj.user;
         displayMessagesElement.appendChild(userMessageElement);
+        const lineFix = document.createElement("div");
+        lineFix.className = "lineFix";
+        displayMessagesElement.appendChild(lineFix);
         if (msgObj.response) {
             const responseMessageElement = document.createElement("div");
             responseMessageElement.innerHTML = msgObj.response;
             responseMessageElement.style.color = "#4a90e2"; 
             displayMessagesElement.appendChild(responseMessageElement);
+            const lineFixAI = document.createElement("div");
+            lineFixAI.className = "lineFix";
+            displayMessagesElement.appendChild(lineFixAI);
             const codeElements = responseMessageElement.querySelectorAll('code');
     
             codeElements.forEach((codeElement) => {
