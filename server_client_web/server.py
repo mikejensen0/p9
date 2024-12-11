@@ -113,6 +113,42 @@ def set_ai_behaviour():
     else:
         return jsonify({"error": "Something went wrong when setting friction behaviour"})
     return jsonify({"message": "Changed friction behaviour"})
+
+@app.route('/write_to_file', methods=['POST'])
+def write_to_file():
+    data = request.json
+    user_code = data.get('codeArray')
+    ai_chat = data.get('chatArray')
+    active_friction = data.get('frictionArray')
+    time_left = data.get('timeLeftArray')
+
+    with open('data/test1.txt', 'w') as file:
+        i = 0 
+        
+        while i < 4:
+            if active_friction[i] == 0:
+                friction = "base"
+            elif active_friction[i] == 1:
+                friction = "blur"
+            elif active_friction[i] == 2:
+                friction = "mult_response"
+            elif active_friction[i] == 3:
+                friction = "unfinish_code"
+            else:
+                raise Exception("friction not supported")
+
+            file.write(f"Friction: {friction} \n")
+            if time_left[i +1] <= 0:
+                file.write(f"Time left: 0\n")
+            else:
+                file.write(f"Time left: {time_left[i+1]/1000}\n")
+            file.write("Chat for task:\n\n")
+            file.write(f"{ai_chat[i]}\n\n")
+            file.write("Code for task:\n\n")
+            file.write(f"{user_code[i]}\n\n")
+            i += 1
+    return jsonify({"message": "Wrote to file"})
+
 @app.route('/submit_code_intermediary', methods=['POST'])
 def submit_code_intermediary():
     data = request.json

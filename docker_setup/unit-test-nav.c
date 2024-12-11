@@ -123,6 +123,6 @@ int main(void) {
     RUN_TEST(test_path_on_3x3_grid);
     RUN_TEST(test_path_on_4x4_grid);
     RUN_TEST(test_path_on_4x3_grid);
-    RUN_TEST(test_path_on_4x3_grid);
+    RUN_TEST(test_path_on_3x4_grid);
     return UNITY_END();  // End Unity Test Framework
 }
