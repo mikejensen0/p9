@@ -1,4 +1,6 @@
 let messages = [];
+let currentTime = 0;
+let timeLeft = 0;
 
 const stackTask = `Make a simple stack implementation in c that supports basic operations PUSH, POP, ADD,  SUB.
 - PUSH is used to PUSH a number onto top of the stack and POP is used to remove the top number from the stack.
@@ -81,6 +83,7 @@ const navigationTests = [   {name: 'test_path_on_3x3_grid', status: 'FAIL', expe
                             {name: 'test_path_on_3x4_grid', status: 'FAIL', expected: 7},
 ];
 
+let timeLeftArray = [];
 let taskIds = [0,1,2,3]; 
 let testDetailsArray = [stackTests, stateMachineTests, expressionParserTests, navigationTests];
 let taskTexts = [stackTask, stateMachineTask, expressionParserTask, navigationTask];
@@ -330,41 +333,53 @@ function selectTask(taskIndex){
     showTests(taskIndex);
 }
 
-function nextTask() {
-    if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
-        //End experiment
-        stopCountdown(counter);
-        //Blur
-        const beginTaskContainer = document.getElementById('begin-task-container');
-        beginTaskContainer.classList.add('active');
-        const beginTaskPromptContainer = document.getElementsByClassName('beginTaskPrompt')[0];
-        beginTaskPromptContainer.classList.remove('active');
+function cancelNext() {
+    const beginTaskContainer = document.getElementById('begin-task-container');
+    beginTaskContainer.classList.remove('active');
+}
 
-        //Cache
-        const code = document.getElementById("code");
-        let taskId = getTaskId(currentTask);
-        const displayMessagesElement = document.getElementById('displayMessages');
-        codeCache[taskId] = code.value;
-        chatCache[taskId] += displayMessagesElement.innerHTML;
-        
-        fetch('/write_to_file', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ codeArray: codeCache, chatArray: chatCache, frictionArray: frictionIds })
-        })
-            .then(response => response.json())
-            .then(data => {
-                
+function nextTask() {
+    timeLeft = currentTime;
+    let end = true;
+
+    if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
+        if (timeLeft >= 0) {
+            end = confirm("This will end the experiment. Proceed?");
+        }
+        if (end) {
+            //End experiment
+            stopCountdown(counter);
+            //Blur
+            const beginTaskContainer = document.getElementById('begin-task-container');
+            beginTaskContainer.classList.add('active');
+            const beginTaskPromptContainer = document.getElementsByClassName('beginTaskPrompt')[0];
+            beginTaskPromptContainer.classList.remove('active');
+
+            //Cache
+            const code = document.getElementById("code");
+            let taskId = getTaskId(currentTask);
+            const displayMessagesElement = document.getElementById('displayMessages');
+            codeCache[taskId] = code.value;
+            chatCache[taskId] += displayMessagesElement.innerHTML;
+            
+            fetch('/write_to_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ codeArray: codeCache, chatArray: chatCache, frictionArray: frictionIds })
             })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
     }
 
     if((currentTask + 1) < taskIds.length && (currentFriction + 1) < frictionIds.length) {
-        stopCountdown(counter);
         //Pause, make them click begin task
         const beginTaskContainer = document.getElementById("begin-task-container");
         beginTaskContainer.classList.add('active');
@@ -372,6 +387,7 @@ function nextTask() {
 }
 
 function beginTask() {
+    stopCountdown(counter);
     selectTask(++currentTask);
     if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
         const nextTaskButton = document.getElementById("buttonNextTask");
@@ -427,7 +443,7 @@ function resetCode(taskIndex){
 }
 
 function countdown(startTime){
-    let currentTime = startTime;
+    currentTime = startTime;
 
     var minutes = Math.floor((currentTime % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((currentTime % (1000 * 60)) / 1000);
@@ -449,6 +465,7 @@ function countdown(startTime){
 }
 
 function stopCountdown(currentCountdown){
+    timeLeftArray.push(timeLeft);
     clearInterval(currentCountdown);
     document.getElementById("countdown").innerHTML = "&nbsp;";
 }
