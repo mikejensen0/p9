@@ -504,8 +504,8 @@ function toggleContent(element, selectedTestElement, testObj) {
 // Helper function for submitUserCode()
 function showTestStatuses(testDetails, fail) {
     if(fail){
+        showTests(currentTask);
         const testResultsContainerElement = document.getElementById("testResults");
-        testResultsContainerElement.innerHTML = "";
         const testResultsHeaderElement = document.createElement("h1");
         testResultsHeaderElement.innerText = "Code Error"; 
         testResultsHeaderElement.style = "color: red";
