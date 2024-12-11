@@ -161,7 +161,7 @@ function updateDisplayedMessages() {
     
             codeElements.forEach((codeElement) => {
                 const codeLength = codeElement.textContent.length;
-                if(frictionIds[currentFriction] == 1)
+                if(frictionIds[currentTask] == 1)
                 {
                     codeElement.style.color = 'transparent';
                     codeElement.style.textShadow = '0px 0px 5px rgba(0,0,0,0.5)';
@@ -191,6 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
         console.log("called resetChat");
         resetChat();
+
     }
 });
 
@@ -210,6 +211,9 @@ function checkServerStatus() {
 function resetChatFromButton() {
     let userresponse = confirm("This will reset your chat. Proceed?");
     if (userresponse) {
+        const displayMessagesElement = document.getElementById("displayMessages");
+        let prevTaskId = getTaskId(currentTask);
+        chatCache[currentTask-1] += displayMessagesElement.innerHTML + "CHAT WAS RESET";
         resetChat();
     }
     else {
@@ -230,7 +234,7 @@ function resetChat() {
             localStorage.clear();
             const displayMessagesElement = document.getElementById("displayMessages");
             displayMessagesElement.innerHTML = "";
-            messages = [];
+            messages = []; 
         })
         .catch(error => {
             console.error('Error:', error);
@@ -244,26 +248,26 @@ function setInitialTask(tasks){
     taskIds = shuffledIds;
     assignFrictions(frictionIds);
     selectTask(0);
-    setAIBehaviour(0);
-    showTests(0);
+    //setAIBehaviour(0);
+    //showTests(0);
 }
 
 function setAIBehaviour(taskIndex){
-    console.log(frictionIds)
+    console.log(frictionIds);
     fetch('/set_ai_behaviour', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ friction: frictionIds[currentFriction]})
+        body: JSON.stringify({ friction: frictionIds[currentTask]})
     })
         .then(response => response.json())
         .then(data => {
             console.log(data.message); 
             localStorage.clear();
             const displayMessagesElement = document.getElementById("displayMessages");
-            let prevTaskId = getTaskId(taskIndex-1);
-            chatCache[prevTaskId] = displayMessagesElement.innerHTML;
+            let prevTaskId = getTaskId(taskIndex);
+            chatCache[prevTaskId] += displayMessagesElement.innerHTML;
             resetChat();
         })
         .catch(error => {
@@ -315,7 +319,7 @@ function assignFrictions(frictions){
 function selectTask(taskIndex){
     toggleTasksCode('tasks');
     changeTaskText(taskIndex);
-    resetCode();
+    resetCode(taskIndex);
     countdown(45/4*60*1000);
     setAIBehaviour(taskIndex);
     showTests(taskIndex);
@@ -325,6 +329,21 @@ function nextTask() {
     if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
         //End experiment
         stopCountdown(counter);
+        
+        fetch('/write_to_file', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ codeArray: codeCache, chatArray: chatCache })
+        })
+            .then(response => response.json())
+            .then(data => {
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     }
 
     if((currentTask + 1) < taskIds.length && (currentFriction + 1) < frictionIds.length) {
@@ -382,8 +401,8 @@ function showTests(taskIndex) {
 
 function resetCode(taskIndex){
     const code = document.getElementById("code");
-    let prevTaskId = getTaskId(taskIndex-1);
-    codeCache[prevTaskId] = code.value;
+    let prevTaskId = getTaskId(taskIndex);
+    codeCache[taskIndex-1] = code.value;
     code.value = "";
     updateLineNumbers();
 }

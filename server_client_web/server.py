@@ -113,6 +113,15 @@ def set_ai_behaviour():
     else:
         return jsonify({"error": "Something went wrong when setting friction behaviour"})
     return jsonify({"message": "Changed friction behaviour"})
+
+@app.route('/write_to_file', methods=['POST'])
+def write_to_file():
+    data = request.json
+    user_code = data.get('codeArray')
+    ai_chat = data.get('chatArray')
+    print(user_code)
+    print(ai_chat)
+    return jsonify({"message": "Wrote to file"})
 @app.route('/submit_code_intermediary', methods=['POST'])
 def submit_code_intermediary():
     data = request.json
