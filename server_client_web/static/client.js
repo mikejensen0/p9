@@ -252,9 +252,8 @@ function setInitialTask(tasks){
     code_description = adjustthisList(shuffledIds);
     taskIds = shuffledIds;
     assignFrictions(frictionIds);
+    console.log("Tasks: " + taskIds + "\nFrictions: " + frictionIds);
     nextTask();
-    setAIBehaviour(0);
-    showTests(0);
 }
 
 function setAIBehaviour(taskIndex){
@@ -270,8 +269,10 @@ function setAIBehaviour(taskIndex){
             console.log(data.message); 
             localStorage.clear();
             const displayMessagesElement = document.getElementById("displayMessages");
-            let prevTaskId = getTaskId(taskIndex-1);
-            chatCache[prevTaskId] += displayMessagesElement.innerHTML;
+            if(taskIndex-1 >= 0){
+                let prevTaskId = getTaskId(taskIndex-1);
+                chatCache[prevTaskId] += displayMessagesElement.innerHTML;
+            }
             resetChat();
         })
         .catch(error => {
@@ -417,8 +418,10 @@ function showTests(taskIndex) {
 
 function resetCode(taskIndex){
     const code = document.getElementById("code");
-    let prevTaskId = getTaskId(taskIndex-1);
-    codeCache[prevTaskId] = code.value;
+    if(taskIndex-1 >= 0){
+        let prevTaskId = getTaskId(taskIndex-1);
+        codeCache[prevTaskId] = code.value;
+    }
     code.value = "";
     updateLineNumbers();
 }
