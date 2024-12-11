@@ -138,7 +138,10 @@ def write_to_file():
                 raise Exception("friction not supported")
 
             file.write(f"Friction: {friction} \n")
-            file.write(f"Time left: {time_left[i+1]/1000}")
+            if time_left[i +1] <= 0:
+                file.write(f"Time left: {time_left[i+1]}")
+            else:
+                file.write(f"Time left: {time_left[i+1]/1000}")
             file.write("Chat for task:\n\n")
             file.write(f"{ai_chat[i]}\n\n")
             file.write("Code for task:\n\n")
