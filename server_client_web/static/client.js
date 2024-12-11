@@ -86,7 +86,7 @@ let testDetailsArray = [stackTests, stateMachineTests, expressionParserTests, na
 let taskTexts = [stackTask, stateMachineTask, expressionParserTask, navigationTask];
 let code_description = ["stack", "state", "expression", "nav"];
 let frictionIds = [0,1,2,3];
-let currentTask = 0;
+let currentTask = -1;
 let currentFriction = 0;
 let codeCache = [];
 let chatCache = [];
@@ -252,7 +252,7 @@ function setInitialTask(tasks){
     code_description = adjustthisList(shuffledIds);
     taskIds = shuffledIds;
     assignFrictions(frictionIds);
-    selectTask(0);
+    nextTask();
     setAIBehaviour(0);
     showTests(0);
 }
