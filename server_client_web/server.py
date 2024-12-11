@@ -139,9 +139,9 @@ def write_to_file():
 
             file.write(f"Friction: {friction} \n")
             if time_left[i +1] <= 0:
-                file.write(f"Time left: {time_left[i+1]}")
+                file.write(f"Time left: 0\n")
             else:
-                file.write(f"Time left: {time_left[i+1]/1000}")
+                file.write(f"Time left: {time_left[i+1]/1000}\n")
             file.write("Chat for task:\n\n")
             file.write(f"{ai_chat[i]}\n\n")
             file.write("Code for task:\n\n")

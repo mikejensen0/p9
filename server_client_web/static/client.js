@@ -343,7 +343,7 @@ function nextTask() {
     let end = true;
 
     if(currentTask == (taskIds.length - 1) || currentFriction == (frictionIds.length -1)) {
-        if (timeLeft >= 0) {
+        if (timeLeft > 0) {
             end = confirm("This will end the experiment. Proceed?");
         }
         if (end) {
@@ -461,6 +461,7 @@ function countdown(startTime){
         if (currentTime < 0) {
             const beginTaskContainer = document.getElementById("begin-task-container");
             if(!beginTaskContainer.classList.contains('active')){
+                currentTime = 0;
                 nextTask();
             }
         }
