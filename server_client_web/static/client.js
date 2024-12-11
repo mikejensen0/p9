@@ -459,7 +459,10 @@ function countdown(startTime){
         document.getElementById("countdown").innerHTML = minutes + "m " + seconds + "s ";
 
         if (currentTime < 0) {
-            nextTask();
+            const beginTaskContainer = document.getElementById("begin-task-container");
+            if(!beginTaskContainer.classList.contains('active')){
+                nextTask();
+            }
         }
     }, 1000);
 }
