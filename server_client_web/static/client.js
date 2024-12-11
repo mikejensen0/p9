@@ -367,7 +367,7 @@ function nextTask() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ codeArray: codeCache, chatArray: chatCache, frictionArray: frictionIds })
+                body: JSON.stringify({ codeArray: codeCache, chatArray: chatCache, frictionArray: frictionIds, timeLeftArray: timeLeftArray })
             })
                 .then(response => response.json())
                 .then(data => {

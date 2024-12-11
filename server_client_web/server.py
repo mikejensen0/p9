@@ -120,7 +120,7 @@ def write_to_file():
     user_code = data.get('codeArray')
     ai_chat = data.get('chatArray')
     active_friction = data.get('frictionArray')
-    print(active_friction)
+    time_left = data.get('timeLeftArray')
 
     with open('data/test1.txt', 'w') as file:
         i = 0 
@@ -138,6 +138,7 @@ def write_to_file():
                 raise Exception("friction not supported")
 
             file.write(f"Friction: {friction} \n")
+            file.write(f"Time left: {time_left[i+1]/1000}")
             file.write("Chat for task:\n\n")
             file.write(f"{ai_chat[i]}\n\n")
             file.write("Code for task:\n\n")
