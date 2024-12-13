@@ -1,1 +1,695 @@
+Friction: unfinish_code 
+Time left: 181.0
+Chat for task:
+
+undefined<div>How would you define a stack in C?</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>Here's how you could define a stack in C, using type placeholders:</span>
+<pre><code class="language-c">#include &lt;stdbool.h&gt;
+#include &lt;stdlib.h&gt;
+
+typedef struct {
+    TYPE *items;
+    int top;
+    int capacity;
+} Stack;
+
+
+// Function to create a stack of a given capacity.
+Stack* createStack(int capacity) {
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    if (!stack) return NULL; // Handle memory allocation failure
+
+    stack-&gt;items = (TYPE*)malloc(capacity * sizeof(TYPE));
+    if (!stack-&gt;items) {
+        free(stack);
+        return NULL; // Handle memory allocation failure
+    }
+    stack-&gt;top = -1;
+    stack-&gt;capacity = capacity;
+    return stack;
+}
+
+// Function to check if the stack is full.
+bool isFull(Stack* stack) {
+    return stack-&gt;top == stack-&gt;capacity - 1;
+}
+
+// Function to check if the stack is empty.
+bool isEmpty(Stack* stack) {
+    return stack-&gt;top == -1;
+}
+
+
+// Function to push an item onto the stack.
+bool push(Stack* stack, TYPE item) {
+    if (isFull(stack)) return false; //Stack Overflow
+    stack-&gt;items[++stack-&gt;top] = item;
+    return true;
+}
+
+// Function to pop an item from the stack.
+TYPE pop(Stack* stack) {
+    if (isEmpty(stack)) {
+        // Handle stack underflow appropriately (e.g., return a default value or an error indicator).
+        return (TYPE)0; // Or handle it in a more robust way
+    }
+    return stack-&gt;items[stack-&gt;top--];
+}
+
+
+// Function to peek at the top item of the stack without removing it.
+TYPE peek(Stack* stack) {
+    if (isEmpty(stack)) {
+        // Handle stack underflow appropriately.
+        return (TYPE)0; //Or handle it in a more robust way
+    }
+    return stack-&gt;items[stack-&gt;top];
+}
+
+
+// Function to free the stack's memory.
+void freeStack(Stack* stack) {
+    free(stack-&gt;items);
+    free(stack);
+}
+</code></pre>
+<span>Remember to replace <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">TYPE</code> with the actual data type you want to store in the stack (e.g., <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">int</code>, <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">float</code>, <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">char</code>, or a custom struct).  You need to choose a <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">TYPE</code> that is appropriate for your needs and ensure all operations are compatible with that type.  If you ask me what type to use, I will tell you that you need to determine the appropriate type from the context of how you intend to use the stack.</span>
+</div><div class="lineFix"></div>
+
+Code for task:
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stddef.h>
+
+#define MAX_SIZE 100
+#define MAX_INPUT_LENGTH 1000
+typedef struct {
+    int arr[MAX_SIZE];
+    int top;
+} Stack;
+
+void initialize(Stack *s){
+    // TODO: implement
+    s = malloc(sizeof(Stack))
+}
+
+int isFull(Stack *s){
+    // TODO: implement
+
+}
+
+int isEmpty(Stack *s){
+    // TODO: implement
+    return !(s->top != null);
+}
+void push(Stack *s, int value){
+    // TODO: implement
+}
+
+int pop(Stack *s){
+    // TODO: implement
+}
+
+void add(Stack *s){
+    // TODO: implement
+}
+void sub(Stack *s){
+    // TODO: implement
+}
+
+void tokenizeUserInputAndExecuteCommand(char *buffer, size_t size, Stack *s){
+    // TODO: implement
+}
+
+Friction: blur 
+Time left: 234.0
+Chat for task:
+
+undefined<div>How do you implement a state machine in C?</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>There are several ways to implement a state machine in C, ranging from simple to more complex, depending on your needs and the complexity of the state machine. Here are a few approaches:</span>
+<p><strong>1. Using a <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">switch</code> statement:</strong>  This is the simplest approach, suitable for smaller state machines with a manageable number of states.</p>
+<pre><code class="language-c" style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">#include &lt;stdio.h&gt;
+
+// Define states as enumerations for better readability and maintainability
+typedef enum {
+  STATE_IDLE,
+  STATE_PROCESSING,
+  STATE_COMPLETE
+} State;
+
+void handle_event(State *current_state, char event) {
+  switch (*current_state) {
+    case STATE_IDLE:
+      if (event == 'S') { // 'S' triggers transition to processing
+        *current_state = STATE_PROCESSING;
+        printf("Transitioned to PROCESSING\n");
+      }
+      break;
+    case STATE_PROCESSING:
+      if (event == 'F') { // 'F' triggers transition to complete
+        *current_state = STATE_COMPLETE;
+        printf("Transitioned to COMPLETE\n");
+      }
+      break;
+    case STATE_COMPLETE:
+      if (event == 'R'){ // 'R' restarts the machine
+        *current_state = STATE_IDLE;
+        printf("Transitioned to IDLE\n");
+      }
+      break;
+    default:
+      printf("Invalid state\n");
+  }
+}
+
+int main() {
+  State current_state = STATE_IDLE;
+  char event;
+
+  printf("Enter events (S, F, R):\n");
+  while (1) {
+    scanf(" %c", &amp;event); // Note the space before %c to consume whitespace
+    handle_event(&amp;current_state, event);
+  }
+  return 0;
+}
+</code></pre>
+<p><strong>2. Using a state table (transition table):</strong> This approach is more organized and scalable for larger state machines.  It uses a table to define transitions between states based on events.</p>
+<pre><code class="language-c" style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">#include &lt;stdio.h&gt;
+
+typedef enum {
+  STATE_IDLE,
+  STATE_PROCESSING,
+  STATE_COMPLETE,
+  NUM_STATES
+} State;
+
+typedef enum {
+  EVENT_START,
+  EVENT_FINISH,
+  EVENT_RESET,
+  NUM_EVENTS
+} Event;
+
+// State transition table.  Rows represent current states, columns represent events.
+// The value at [state][event] is the next state.
+State transition_table[NUM_STATES][NUM_EVENTS] = {
+  {STATE_PROCESSING, STATE_IDLE, STATE_IDLE}, // IDLE state transitions
+  {STATE_PROCESSING, STATE_COMPLETE, STATE_IDLE}, // PROCESSING state transitions
+  {STATE_IDLE, STATE_COMPLETE, STATE_IDLE}      // COMPLETE state transitions
+};
+
+
+void handle_event(State *current_state, Event event) {
+  if (*current_state &gt;= 0 &amp;&amp; *current_state &lt; NUM_STATES &amp;&amp; event &gt;=0 &amp;&amp; event &lt; NUM_EVENTS){
+    *current_state = transition_table[*current_state][event];
+    printf("Transitioned to state %d\n", *current_state);
+  } else {
+    printf("Invalid state or event\n");
+  }
+}
+
+int main() {
+  State current_state = STATE_IDLE;
+  int event_input;
+
+  printf("Enter events (0: START, 1: FINISH, 2: RESET):\n");
+  while (1) {
+    scanf("%d", &amp;event_input);
+    if (event_input &gt;=0 &amp;&amp; event_input &lt; NUM_EVENTS)
+      handle_event(&amp;current_state, (Event)event_input);
+    else
+      printf("Invalid event input\n");
+  }
+  return 0;
+}
+</code></pre>
+<p><strong>3. Using structs and function pointers:</strong> This is a more advanced approach that provides better organization and flexibility, especially for state machines with complex actions associated with each state.</p>
+<p>This approach would involve creating a struct for each state, containing function pointers for handling different events.  This is more complex to implement and is best suited for larger, more intricate state machines.</p>
+<span>Remember to choose the approach that best suits your needs. For simple state machines, the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">switch</code> statement is sufficient. For larger, more complex systems, a state table or function pointer approach offers better maintainability and scalability.  Always consider error handling and input validation to make your code robust.</span>
+</div><div class="lineFix"></div><div>Can you give me a brief rundown on enums in C?</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>In C, <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">enum</code> (short for enumeration) is a user-defined data type that allows you to assign names to integer constants.  This improves code readability and maintainability compared to using raw integer values.</span>
+<p><strong>Declaration:</strong></p>
+<p>Enums are declared using the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">enum</code> keyword, followed by the enum's name, and a list of named constants within curly braces:</p>
+<pre><code class="language-c" style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">enum traffic_light { RED, YELLOW, GREEN };
+</code></pre>
+<p>In this example:</p>
+<ul>
+<li><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">traffic_light</code> is the name of the enumeration type.</li>
+<li><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">RED</code>, <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">YELLOW</code>, and <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">GREEN</code> are the named constants (enumerators).  By default, these are assigned integer values starting from 0: <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">RED</code> is 0, <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">YELLOW</code> is 1, and <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">GREEN</code> is 2.</li>
+</ul>
+<p>You can also explicitly assign values:</p>
+<pre><code class="language-c" style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">enum color { RED = 10, GREEN = 20, BLUE = 30 };
+</code></pre>
+<p>Here, <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">RED</code> is 10, <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">GREEN</code> is 20, and <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">BLUE</code> is 30.  If you assign a value to one enumerator, subsequent enumerators without assigned values will increment sequentially from the last assigned value.</p>
+<p><strong>Usage:</strong></p>
+<p>You can declare variables of an enum type:</p>
+<pre><code class="language-c" style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">enum traffic_light current_light;
+current_light = GREEN;
+</code></pre>
+<p>Enums can be used in <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">switch</code> statements:</p>
+<pre><code class="language-c" style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">switch (current_light) {
+  case RED:
+    printf("Stop!\n");
+    break;
+  case YELLOW:
+    printf("Slow down!\n");
+    break;
+  case GREEN:
+    printf("Go!\n");
+    break;
+}
+</code></pre>
+<p><strong>Underlying Type:</strong></p>
+<p>The underlying type of an enum is typically <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">int</code>, but it can vary depending on the compiler and the range of values you assign.  You can specify the underlying type explicitly:</p>
+<pre><code class="language-c" style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">enum color : unsigned char { RED, GREEN, BLUE }; // Underlying type is unsigned char
+</code></pre>
+<p><strong>Important Considerations:</strong></p>
+<ul>
+<li><strong>Readability:</strong> Enums significantly improve code readability by replacing cryptic numbers with meaningful names.</li>
+<li><strong>Maintainability:</strong>  If you need to change the integer values associated with the enumerators, you only need to modify the enum declaration, rather than searching and replacing throughout your code.</li>
+<li><strong>Error Prevention:</strong>  The compiler can help detect errors related to using invalid enum values.</li>
+<li><strong>Scoped Enums (C++ only):</strong> C++ introduces scoped enums (<code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">enum class</code>), which offer stronger type safety and prevent implicit conversions to integers.  C does not have this feature.</li>
+</ul>
+<span>In summary, enums are a valuable tool for creating more readable, maintainable, and robust C code by providing named constants for integer values. They are particularly useful when working with state machines or representing sets of related constants.</span>
+</div><div class="lineFix"></div><div>typedef enum {<br>    OPENED,<br>    CLOSED,<br>    LOCKED,<br>} DoorState;<br><br>DoorState transition(const char* action){<br>    // TODO: implement<br>    if(strcmp(action, "OPEN")){<br>        <br>    }<br>    elseif(strcmp(action, "CLOSE")){<br><br>    }<br>    elseif(strcmp(action, "LOCK")){<br><br>    }<br>    elseif(strcmp(action, "UNLOCK"){<br><br>    }<br>    else{<br>        printf("Invalid action\n");<br>    }<br>}</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><pre><code class="language-c" style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+typedef enum {
+    OPENED,
+    CLOSED,
+    LOCKED,
+} DoorState;
+
+DoorState transition(const char* action, DoorState currentState) {
+    //Improved transition function with error handling and state consideration.
+
+    if (strcmp(action, "OPEN") == 0) {
+        if (currentState == LOCKED) {
+            printf("Door is locked. Cannot open.\n");
+            return LOCKED; //Stay in the same state.
+        } else {
+            return OPENED;
+        }
+    } else if (strcmp(action, "CLOSE") == 0) {
+        return CLOSED;
+    } else if (strcmp(action, "LOCK") == 0) {
+        if (currentState == OPENED) {
+            printf("Door must be closed before locking.\n");
+            return OPENED; //Stay in the same state.
+
+        } else {
+            return LOCKED;
+        }
+    } else if (strcmp(action, "UNLOCK") == 0) {
+        if (currentState == LOCKED) {
+            return CLOSED; // Unlocked state defaults to closed.
+        } else {
+            printf("Door is not locked.\n");
+            return currentState; //Stay in the same state
+        }
+    } else {
+        printf("Invalid action: %s\n", action);
+        return currentState; //Stay in the same state
+    }
+}
+
+int main() {
+    DoorState state = CLOSED;
+    char action[20];
+
+    printf("Current state: %d\n", state); //Print Initial State
+
+    while(1){
+        printf("Enter action (OPEN, CLOSE, LOCK, UNLOCK, or 'quit'): ");
+        scanf("%s", action);
+
+        if(strcmp(action, "quit") == 0) break;
+
+        state = transition(action, state);
+        printf("New state: %d\n", state);
+    }
+    return 0;
+}
+</code></pre>
+<span>Key improvements:</span>
+<ul>
+<li><strong><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">currentState</code> parameter:</strong> The function now takes the current state as input, allowing it to make decisions based on the current state of the door.  This is crucial for a proper state machine.</li>
+<li><strong>Error Handling:</strong>  It now includes checks to prevent invalid transitions (e.g., trying to open a locked door, locking an open door).  Error messages are printed to inform the user.</li>
+<li><strong><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strcmp</code> return value check:</strong>  The <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strcmp</code> function returns 0 if the strings are equal, not just true/false. This is corrected.</li>
+<li><strong>Return value:</strong> The function now returns the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">DoorState</code> after the transition.</li>
+<li><strong><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">main</code> function added:</strong> A <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">main</code> function demonstrates how to use the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">transition</code> function and keeps track of the door's state.</li>
+<li><strong>Case Sensitivity:</strong>  The code is now case-sensitive.  You might want to convert the input to lowercase for robustness (using functions like <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">tolower()</code>).  Consider adding this for a more user-friendly experience.</li>
+<li><strong>Clearer output:</strong> The output now includes the current state before any action and after any action.</li>
+<li><strong>Quit condition added:</strong> The <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">main</code> function allows the user to quit the program with the "quit" command.</li>
+</ul>
+<span>This improved version is a much more robust and realistic implementation of a door state machine.  Remember that a real-world door system would be significantly more complex, but this example illustrates the core principles effectively.</span>
+</div><div class="lineFix"></div>
+
+Code for task:
+
+
+
+Friction: mult_response 
+Time left: 421.0
+Chat for task:
+
+undefined<div>How can you split strings in C?</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>C doesn't have a built-in string split function like some higher-level languages.  You need to manually iterate through the string and identify delimiters.  Here are a few ways to split strings in C, each with different approaches and tradeoffs:</span>
+<p><strong>Method 1: Using <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strtok()</code> (Simplest for multiple splits)</strong></p>
+<p><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strtok()</code> is a standard C library function that's well-suited for splitting a string into multiple tokens based on a delimiter.  However, it modifies the original string, so you'll need a copy if you need to preserve the original.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main() {
+    char str[] = "This is a sample string";
+    char *token;
+    const char delimiter[] = " ";
+
+    // strtok modifies the original string, so make a copy if needed
+    char str_copy[strlen(str) + 1];
+    strcpy(str_copy, str);
+
+    // Get the first token
+    token = strtok(str_copy, delimiter);
+
+    // Walk through other tokens
+    while (token != NULL) {
+        printf("Token: %s\n", token);
+        token = strtok(NULL, delimiter);
+    }
+
+    return 0;
+}
+</code></pre>
+<p><strong>Method 2: Manual Iteration (More control, preserves original string)</strong></p>
+<p>This method gives you more control and doesn't modify the original string.  It's slightly more verbose but avoids the potential side effects of <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strtok()</code>.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    char str[] = "This,is,a,sample,string";
+    char *token;
+    const char delimiter = ',';
+    char *start = str;
+    char *end;
+    int i = 0;
+
+    while ((end = strchr(start, delimiter)) != NULL) {
+        token = (char *)malloc(end - start + 1); // Allocate memory for the token
+        if (token == NULL) {
+            perror("Memory allocation failed");
+            return 1;
+        }
+        strncpy(token, start, end - start);
+        token[end - start] = '\0';
+        printf("Token %d: %s\n", ++i, token);
+        free(token); // Don't forget to free allocated memory!
+        start = end + 1;
+    }
+
+    // Handle the last token
+    token = (char *)malloc(strlen(start) + 1); // Allocate memory for the last token
+    if (token == NULL) {
+        perror("Memory allocation failed");
+        return 1;
+    }
+    strcpy(token, start);
+    printf("Token %d: %s\n", ++i, token);
+    free(token);
+
+    return 0;
+}
+</code></pre>
+<p><strong>Method 3: Using <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strcspn()</code> (For simple delimiters)</strong></p>
+<p><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strcspn()</code> finds the first occurrence of any character from a set of characters. This can be used for simple delimiter scenarios.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main() {
+    char str[] = "apple;banana;orange";
+    char *start = str;
+    size_t len;
+    const char delimiters[] = ";";
+
+    while (*start) {
+        len = strcspn(start, delimiters);
+        if (len &gt; 0) {
+            printf("Token: %.*s\n", (int)len, start);
+            start += len;
+        }
+        if (*start) {
+            start++; // Skip the delimiter
+        }
+    }
+    return 0;
+}
+</code></pre>
+<span>Remember to choose the method that best suits your needs and be mindful of memory management, especially when dynamically allocating memory as in Method 2.  Method 1 is the easiest for multiple splits with a single delimiter, while Method 2 offers more control and avoids modifying the original string at the cost of more complexity.  Method 3 is suitable for simple scenarios with a fixed set of delimiters.  Always remember to handle potential errors like memory allocation failures.</span>
+</div><div class="lineFix"></div>
+
+Code for task:
+
+
+
+Friction: base 
+Time left: 29.0
+Chat for task:
+
+undefined<div>typedef struct {<br>    int row;<br>    int col;<br>    int dist;<br>} QueueNode;<br><br>int enqueue(QueueNode *queue, int *head, int *tail, int row, int col, int dist){<br>    // TODO: implement<br>}<br><br>How would you use the above code to start constructing a shortest path algorithm, moving vertically or horizontally between squares in a grid?</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>The provided code defines a <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">QueueNode</code> structure to represent a node in a queue used for breadth-first search (BFS), a common algorithm for finding the shortest path in an unweighted graph like a grid.  The <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">enqueue</code> function is incomplete. Let's complete it and then show how to use it within a shortest path algorithm.</span>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+
+typedef struct {
+    int row;
+    int col;
+    int dist;
+} QueueNode;
+
+#define QUEUE_SIZE 1000 // Adjust as needed
+
+int enqueue(QueueNode *queue, int *head, int *tail, int row, int col, int dist) {
+    if (*tail == QUEUE_SIZE -1) {
+        return 0; // Queue is full
+    }
+    (*tail)++;
+    queue[*tail].row = row;
+    queue[*tail].col = col;
+    queue[*tail].dist = dist;
+    return 1; // Enqueue successful
+}
+
+
+int dequeue(QueueNode *queue, int *head, int *tail) {
+    if (*head &gt; *tail) {
+        return 0; // Queue is empty
+    }
+    (*head)++;
+    return 1; // Dequeue successful
+
+}
+
+int main() {
+    QueueNode queue[QUEUE_SIZE];
+    int head = -1;
+    int tail = -1;
+
+    // Example Grid (replace with your actual grid representation)
+    int grid_rows = 5;
+    int grid_cols = 5;
+    bool visited[5][5] = {false}; //Keep track of visited nodes.  Important to avoid cycles
+
+    //Start and end points
+    int start_row = 0;
+    int start_col = 0;
+    int end_row = 4;
+    int end_col = 4;
+
+    //Enqueue starting node
+    enqueue(queue, &amp;head, &amp;tail, start_row, start_col, 0);
+    visited[start_row][start_col] = true;
+
+
+    int row_offsets[] = {-1, 1, 0, 0}; // Up, Down, Left, Right
+    int col_offsets[] = {0, 0, -1, 1};
+
+    while (head &lt;= tail) {
+        QueueNode current = queue[head + 1];
+        dequeue(queue, &amp;head, &amp;tail);
+
+        if (current.row == end_row &amp;&amp; current.col == end_col) {
+            printf("Shortest distance: %d\n", current.dist);
+            break;
+        }
+
+        for (int i = 0; i &lt; 4; i++) {
+            int new_row = current.row + row_offsets[i];
+            int new_col = current.col + col_offsets[i];
+
+            //Check boundaries and if already visited
+            if (new_row &gt;= 0 &amp;&amp; new_row &lt; grid_rows &amp;&amp; new_col &gt;= 0 &amp;&amp; new_col &lt; grid_cols &amp;&amp; !visited[new_row][new_col]) {
+                enqueue(queue, &amp;head, &amp;tail, new_row, new_col, current.dist + 1);
+                visited[new_row][new_col] = true;
+            }
+        }
+    }
+
+    return 0;
+}
+</code></pre>
+<p>This improved code includes:</p>
+<ul>
+<li><strong><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">dequeue</code> function:</strong>  Removes a node from the queue's head.</li>
+<li><strong>Error Handling:</strong> Checks for queue overflow and underflow.</li>
+<li><strong><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">main</code> function:</strong> Demonstrates BFS using the queue.  This example uses a simple boolean <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">visited</code> array to track visited cells.  For more complex scenarios (obstacles, weighted edges), you would need a more sophisticated data structure.</li>
+<li><strong>Clearer Variable Names:</strong>  Improves readability.</li>
+<li><strong>Example Grid and Start/End Points:</strong> Shows how to integrate the algorithm with a grid.</li>
+<li><strong>Boundary Checks:</strong> Ensures the algorithm doesn't go out of bounds.</li>
+</ul>
+<span>Remember to adjust <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">QUEUE_SIZE</code> to a value appropriate for your grid size.  This is a basic implementation;  for very large grids, consider using a more dynamic queue implementation (e.g., linked list) to avoid the fixed-size limitation.  Also, adapting this to handle obstacles or weighted edges would require modifications to the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">if</code> condition within the inner loop.</span>
+</div><div class="lineFix"></div>CHAT WAS RESET<div>Create a simple path-finding algorithm in c that finds the quickest path from one starting point to an endpoint in a grid.<br>If no path exists the program should notify of this<br><br>The program should receive the grid by user input in the form of a 2D array<br><br>An example could look like this [[2,1,1], [0, 1, 1],[0, 0,2]] where 2 represents the end and starting point, 1 represents a blocked path and 0 represents a traversable path<br><br>This specific example should then give us a minimum path of 4.</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>This C code implements a Breadth-First Search (BFS) algorithm to find the shortest path in a grid.  BFS is guaranteed to find the shortest path if one exists.</span>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;limits.h&gt;
+
+#define MAX_GRID_SIZE 100
+
+// Structure to represent a cell in the grid
+typedef struct {
+    int x;
+    int y;
+    int distance;
+} Cell;
+
+// Queue implementation using a simple array
+typedef struct {
+    Cell data[MAX_GRID_SIZE * MAX_GRID_SIZE];
+    int front;
+    int rear;
+    int size;
+} Queue;
+
+// Function to initialize the queue
+void initQueue(Queue *q) {
+    q-&gt;front = q-&gt;rear = -1;
+    q-&gt;size = 0;
+}
+
+// Function to check if the queue is empty
+bool isEmpty(Queue *q) {
+    return q-&gt;size == 0;
+}
+
+// Function to enqueue a cell
+void enqueue(Queue *q, Cell cell) {
+    q-&gt;rear++;
+    q-&gt;data[q-&gt;rear] = cell;
+    q-&gt;size++;
+}
+
+// Function to dequeue a cell
+Cell dequeue(Queue *q) {
+    Cell cell = q-&gt;data[q-&gt;front];
+    q-&gt;front++;
+    q-&gt;size--;
+    return cell;
+}
+
+
+int bfs(int grid[MAX_GRID_SIZE][MAX_GRID_SIZE], int rows, int cols, int startX, int startY, int endX, int endY) {
+    Queue q;
+    initQueue(&amp;q);
+
+    int visited[MAX_GRID_SIZE][MAX_GRID_SIZE] = {0}; //Keep track of visited cells
+    int dist[MAX_GRID_SIZE][MAX_GRID_SIZE]; //Store distances
+
+    for(int i=0; i&lt;rows; ++i){
+        for(int j=0; j&lt;cols; ++j){
+            dist[i][j] = INT_MAX;
+        }
+    }
+
+    Cell startCell = {startX, startY, 0};
+    enqueue(&amp;q, startCell);
+    visited[startX][startY] = 1;
+    dist[startX][startY] = 0;
+
+
+    int dx[] = {0, 0, 1, -1}; // Possible movements (right, left, down, up)
+    int dy[] = {1, -1, 0, 0};
+
+    while (!isEmpty(&amp;q)) {
+        Cell currentCell = dequeue(&amp;q);
+        int x = currentCell.x;
+        int y = currentCell.y;
+        int d = currentCell.distance;
+
+        if (x == endX &amp;&amp; y == endY) {
+            return d;
+        }
+
+        for (int i = 0; i &lt; 4; i++) {
+            int newX = x + dx[i];
+            int newY = y + dy[i];
+
+            // Check boundaries and valid cell
+            if (newX &gt;= 0 &amp;&amp; newX &lt; rows &amp;&amp; newY &gt;= 0 &amp;&amp; newY &lt; cols &amp;&amp; grid[newX][newY] == 0 &amp;&amp; !visited[newX][newY]) {
+                Cell nextCell = {newX, newY, d + 1};
+                enqueue(&amp;q, nextCell);
+                visited[newX][newY] = 1;
+                dist[newX][newY] = d+1;
+            }
+        }
+    }
+
+    return -1; // No path found
+}
+
+int main() {
+    int grid[MAX_GRID_SIZE][MAX_GRID_SIZE];
+    int rows, cols;
+    int startX, startY, endX, endY;
+
+    printf("Enter the number of rows and columns: ");
+    scanf("%d %d", &amp;rows, &amp;cols);
+
+    printf("Enter the grid (0 for traversable, 1 for blocked, 2 for start/end):\n");
+    for (int i = 0; i &lt; rows; i++) {
+        for (int j = 0; j &lt; cols; j++) {
+            scanf("%d", &amp;grid[i][j]);
+            if (grid[i][j] == 2) {
+                if(startX == 0 &amp;&amp; startY ==0){
+                    startX = i;
+                    startY = j;
+                } else {
+                    endX = i;
+                    endY = j;
+                }
+            }
+        }
+    }
+
+    int shortestPath = bfs(grid, rows, cols, startX, startY, endX, endY);
+
+    if (shortestPath != -1) {
+        printf("Shortest path length: %d\n", shortestPath);
+    } else {
+        printf("No path found.\n");
+    }
+
+    return 0;
+}
+</code></pre>
+<p>To compile and run this code (assuming you save it as <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">pathfinding.c</code>):</p>
+<ol>
+<li><strong>Compile:</strong> <code>gcc pathfinding.c -o pathfinding</code></li>
+<li><strong>Run:</strong> <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">./pathfinding</code></li>
+</ol>
+<span>Remember to input your grid data correctly.  The code handles finding the start and end points automatically based on the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">2</code> values in your input.  If there are multiple <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">2</code>'s the first will be the start and the second the end.  If you need more flexibility you may want to modify this input method.</span>
+</div><div class="lineFix"></div>
+
+Code for task:
+
+
 

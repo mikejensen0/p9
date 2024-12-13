@@ -1,1 +1,551 @@
+Friction: base 
+Time left: 0
+Chat for task:
+
+undefined<div>If I have a stack in C, what is the syntax for pushing an element to the top of the stack? The stack is initialized from the following struct: "typedef struct {<br>    int arr[MAX_SIZE];<br>    int top;<br>} Stack;"</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>The syntax for pushing an element onto the stack depends on whether you're managing the stack's "full" state explicitly or relying on the array bounds to detect overflow.  Here are two versions:</span>
+<p><strong>Version 1: Explicit Full/Empty Check (Recommended)</strong></p>
+<p>This version explicitly checks if the stack is full before pushing, preventing a buffer overflow.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt; //for bool
+
+#define MAX_SIZE 100
+
+typedef struct {
+    int arr[MAX_SIZE];
+    int top;
+    bool isFull; //Added to track if stack is full
+} Stack;
+
+
+bool push(Stack *s, int value) {
+    if (s-&gt;isFull) {
+        printf("Stack Overflow!\n");
+        return false; // Indicate failure
+    }
+    s-&gt;arr[++s-&gt;top] = value;
+    if (s-&gt;top == MAX_SIZE -1) s-&gt;isFull = true; //mark stack as full
+    return true; // Indicate success
+}
+
+int main() {
+    Stack s;
+    s.top = -1; // Initialize top to -1 for an empty stack
+    s.isFull = false; // Initialize isFull to false
+
+    push(&amp;s, 10);
+    push(&amp;s, 20);
+    push(&amp;s, 30);
+
+    //Further operations...
+
+
+    return 0;
+}
+</code></pre>
+<p><strong>Version 2: Implicit Full Check (Less Safe)</strong></p>
+<p>This version relies on <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">s-&gt;top</code> reaching <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">MAX_SIZE -1</code> to detect a full stack.  It's less safe because it can lead to a buffer overflow if not handled carefully.  <strong>Avoid this method if possible.</strong></p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+#define MAX_SIZE 100
+
+typedef struct {
+    int arr[MAX_SIZE];
+    int top;
+} Stack;
+
+void push(Stack *s, int value) {
+    if (s-&gt;top == MAX_SIZE - 1) {
+        printf("Stack Overflow!\n");
+        return; //Error handling - could also exit or throw an error
+    }
+    s-&gt;arr[++s-&gt;top] = value;
+}
+
+int main() {
+    Stack s;
+    s.top = -1; // Initialize top to -1 for an empty stack
+
+    push(&amp;s, 10);
+    push(&amp;s, 20);
+    push(&amp;s, 30);
+
+    //Further operations...
+
+    return 0;
+}
+</code></pre>
+<p><strong>Important Considerations:</strong></p>
+<ul>
+<li><strong>Error Handling:</strong>  Both examples include basic error handling for stack overflow.  In a production environment, you might want more robust error handling (e.g., returning an error code, raising an exception).</li>
+<li><strong>Initialization:</strong>  Remember to initialize <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">s.top</code> to -1 when creating a new stack.  This indicates an empty stack.</li>
+<li><strong><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">++s-&gt;top</code>:</strong> This pre-increments <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">s-&gt;top</code> before assigning the value. This is crucial because <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">top</code> represents the <em>index</em> of the top element, and we want to increment it <em>before</em> placing the new element.</li>
+<li><strong>Pointer to Stack:</strong> The <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">push</code> function takes a pointer to the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">Stack</code> struct (<code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">Stack *s</code>) because we need to modify the original stack, not just a copy.</li>
+</ul>
+<span>Always prefer Version 1 (explicit full check) for its safety and clarity.  It makes it much easier to reason about the state of your stack and avoid potentially disastrous buffer overflows. Remember to include appropriate header files like <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">stdio.h</code> and potentially <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">stdbool.h</code> depending on your compiler and standard library.</span>
+</div><div class="lineFix"></div><div>Likewise, how do I pop the top element?</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>Similar to <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">push</code>, the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">pop</code> function needs to handle the case of an empty stack to prevent undefined behavior.  Here are versions mirroring the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">push</code> examples:</span>
+<p><strong>Version 1: Explicit Empty Check (Recommended)</strong></p>
+<p>This version explicitly checks if the stack is empty before popping.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt;
+
+#define MAX_SIZE 100
+
+typedef struct {
+    int arr[MAX_SIZE];
+    int top;
+    bool isFull;
+    bool isEmpty; // Added to track if stack is empty
+} Stack;
+
+bool push(Stack *s, int value) { // Updated push function
+    if (s-&gt;isFull) {
+        printf("Stack Overflow!\n");
+        return false;
+    }
+    s-&gt;arr[++s-&gt;top] = value;
+    s-&gt;isEmpty = false;
+    if (s-&gt;top == MAX_SIZE -1) s-&gt;isFull = true;
+    return true;
+}
+
+int pop(Stack *s) {
+    if (s-&gt;isEmpty) {
+        printf("Stack Underflow!\n");
+        return -1; // Or some other error indicator, like INT_MIN
+    }
+    s-&gt;isFull = false; // Stack is no longer full after pop
+    int value = s-&gt;arr[s-&gt;top--];
+    if(s-&gt;top == -1) s-&gt;isEmpty = true; //Mark stack as empty
+    return value;
+}
+
+
+int main() {
+    Stack s;
+    s.top = -1;
+    s.isFull = false;
+    s.isEmpty = true;
+
+    push(&amp;s, 10);
+    push(&amp;s, 20);
+    push(&amp;s, 30);
+
+    printf("Popped: %d\n", pop(&amp;s)); // Should print 30
+    printf("Popped: %d\n", pop(&amp;s)); // Should print 20
+    printf("Popped: %d\n", pop(&amp;s)); // Should print 10
+    printf("Popped: %d\n", pop(&amp;s)); // Should print -1 and "Stack Underflow!"
+
+    return 0;
+}
+</code></pre>
+<p><strong>Version 2: Implicit Empty Check (Less Safe)</strong></p>
+<p>This version relies on <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">s-&gt;top</code> being -1 to detect an empty stack.  Again, less safe and should be avoided.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+#define MAX_SIZE 100
+
+typedef struct {
+    int arr[MAX_SIZE];
+    int top;
+} Stack;
+
+void push(Stack *s, int value) {
+  if (s-&gt;top == MAX_SIZE - 1) {
+    printf("Stack Overflow!\n");
+    return;
+  }
+  s-&gt;arr[++s-&gt;top] = value;
+}
+
+int pop(Stack *s) {
+    if (s-&gt;top == -1) {
+        printf("Stack Underflow!\n");
+        return -1; // Or some other error indicator
+    }
+    return s-&gt;arr[s-&gt;top--];
+}
+
+int main() {
+    Stack s;
+    s.top = -1;
+
+    push(&amp;s, 10);
+    push(&amp;s, 20);
+    push(&amp;s, 30);
+
+    printf("Popped: %d\n", pop(&amp;s)); // Should print 30
+    printf("Popped: %d\n", pop(&amp;s)); // Should print 20
+    printf("Popped: %d\n", pop(&amp;s)); // Should print 10
+    printf("Popped: %d\n", pop(&amp;s)); // Should print -1 and "Stack Underflow!"
+
+    return 0;
+}
+</code></pre>
+<p><strong>Key Differences from <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">push</code>:</strong></p>
+<ul>
+<li><strong><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">top--</code>:</strong> This post-decrements <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">s-&gt;top</code> <em>after</em> retrieving the value.  This is crucial because we read the value at the current <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">top</code> index before decrementing to point to the new top.</li>
+<li><strong>Return Value:</strong>  <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">pop</code> returns the popped value.  Error handling is done by returning a special value (like -1) to signal an underflow.</li>
+<li><strong>Empty Check:</strong> The <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">isEmpty</code> boolean variable helps us prevent popping from an empty stack.  It is important to update this flag in the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">pop</code> and <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">push</code> function.</li>
+</ul>
+<span>Again, <strong>Version 1 (with explicit empty check) is strongly recommended</strong> for its improved robustness and error handling.  Always prioritize safety when working with data structures. Remember to include necessary header files.</span>
+</div><div class="lineFix"></div>
+
+Code for task:
+
+
+
+Friction: blur 
+Time left: 0
+Chat for task:
+
+undefined<div>If I want to iterate up to the length of a "const* char action" input parameter, how would I do this in a for-loop?</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>You can't directly get the length of a <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">const char*</code> (which represents a C-style string) using a built-in property like you might with a <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">std::string</code> in C++.  You need to use <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strlen</code> from <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">&lt;string.h&gt;</code> (or <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">&lt;cstring&gt;</code>).  Here's how you would do it in a for-loop:</span>
+<pre><code class="language-c" style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+void iterate_string(const char* action) {
+  if (action == NULL) {
+    fprintf(stderr, "Error: Null pointer passed to iterate_string\n");
+    return; // Or handle the error in a more appropriate way for your application
+  }
+
+  size_t len = strlen(action); // Get the length of the string
+
+  for (size_t i = 0; i &lt; len; i++) {
+    printf("Character at index %zu: %c\n", i, action[i]);
+  }
+}
+
+int main() {
+  const char* myAction = "Hello, world!";
+  iterate_string(myAction);
+  return 0;
+}
+</code></pre>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li><strong><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">#include &lt;string.h&gt;</code>:</strong> This line includes the standard string library, which provides the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strlen</code> function.</li>
+<li><strong><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">size_t len = strlen(action);</code>:</strong>  <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strlen</code> returns the length of the null-terminated string pointed to by <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">action</code>.  The return type is <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">size_t</code>, which is an unsigned integer type suitable for representing sizes and indices.  Using <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">size_t</code> avoids potential integer overflow warnings.</li>
+<li><strong><code style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">for (size_t i = 0; i &lt; len; i++)</code>:</strong> This loop iterates from 0 up to (but not including) <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">len</code>, covering all characters in the string.</li>
+<li><strong><code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">action[i]</code>:</strong> This accesses the character at index <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">i</code> of the string.</li>
+<li><strong>Null Pointer Check:</strong> The <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">if (action == NULL)</code> check is crucial.  Attempting to use <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strlen</code> on a <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">NULL</code> pointer will lead to a crash.  Always handle potential null pointers.</li>
+</ul>
+<p>Remember to compile this code with a C compiler (like GCC or Clang) using a command like: <code style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">gcc your_file_name.c -o your_program_name</code></p>
+<span>This improved version provides better error handling and uses the correct unsigned integer type for indexing, making it more robust and less prone to errors.</span>
+</div><div class="lineFix"></div><div>The input is of the format: " [“OPEN”, “CLOSE”, “LOCK, “UNLOCK”]" so the length is in this case 4. How would I iterate over this input? </div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>That input string isn't a simple C-style string; it's a more complex structure containing comma-separated strings within square brackets.  You can't directly iterate over it character by character using <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strlen</code> and expect to get the individual commands. You'll need to parse it. Here are a couple of approaches:</span>
+<p><strong>Method 1: Using <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strtok</code> (Simpler, but modifies the original string)</strong></p>
+<p>This method uses the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strtok</code> function to split the string into tokens.  <strong>Important:</strong> <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strtok</code> modifies the original string, so you'll need a copy if you need to preserve the original input.</p>
+<pre><code class="language-c" style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+#define MAX_TOKENS 100 // Adjust as needed
+
+int main() {
+  char input[] = " [“OPEN”, “CLOSE”, “LOCK”, “UNLOCK”] "; // Note: Include spaces for strtok
+  char *token;
+  char *rest = input; //For strtok to work correctly.
+  char *tokens[MAX_TOKENS]; //Store pointers to tokens here.
+  int tokenCount = 0;
+
+  //Remove leading and trailing brackets and spaces
+  char *start = strchr(input, '[');
+  char *end = strrchr(input, ']');
+
+  if (start != NULL &amp;&amp; end != NULL) {
+      *start = ' '; // replace '['
+      *end = '\0'; // null-terminate
+
+      for (char *p = input; *p; ++p) {
+          if (!isspace(*p)) {
+              break;
+          }
+      }
+      for (char *p = input + strlen(input) -1; p &gt;= input ; --p){
+          if (!isspace(*p)) {
+              break;
+          }
+      }
+      *p = '\0';
+  }
+
+
+  token = strtok_r(rest, ",", &amp;rest); //First Token
+  while (token != NULL &amp;&amp; tokenCount &lt; MAX_TOKENS) {
+    //Remove quotes
+    char *temp = strdup(token); //Make a copy to avoid modifying original token
+
+    char *quoteStart = strchr(temp, '"');
+    if (quoteStart) {
+        *quoteStart = ' ';
+    }
+    char *quoteEnd = strrchr(temp, '"');
+    if (quoteEnd) {
+       *quoteEnd = '\0';
+    }
+
+    //Remove leading and trailing spaces
+    for (char *p = temp; *p; ++p) {
+        if (!isspace(*p)) {
+            break;
+        }
+    }
+    char *p2 = temp + strlen(temp) -1;
+    for (; p2 &gt;= temp ; --p2){
+        if (!isspace(*p2)) {
+            break;
+        }
+    }
+    *p2 = '\0';
+
+
+    tokens[tokenCount] = p;
+    printf("Token %d: %s\n", tokenCount + 1, temp);
+    free(temp);
+    token = strtok_r(NULL, ",", &amp;rest);
+    tokenCount++;
+  }
+
+  return 0;
+}
+</code></pre>
+<p><strong>Method 2: Manual Parsing (More complex, but doesn't modify the original string)</strong></p>
+<p>This method iterates through the string and manually identifies the commands.  It's more robust but requires more coding.</p>
+<pre><code class="language-c" style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">// This method is significantly more complex and would involve a state machine or 
+// similar approach to handle potential errors and edge cases in the input format.  It's 
+// omitted for brevity, as Method 1 is a reasonable solution for well-formed input.
+//  If you need to handle malformed input more robustly, consider a more sophisticated parsing library or method.
+</code></pre>
+<span><strong>Recommendation:</strong><p></p>
+<p>For this specific example,  Method 1 using <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strtok</code> is the simpler and more efficient approach. However, be aware of its limitations and the modification of the original string.  If robust error handling and the preservation of the original input string are paramount,  a more manual parsing approach (Method 2) or a dedicated parsing library would be necessary. Remember to always handle potential errors, like the input string being <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">NULL</code> or having unexpected formats.  Choose the method that best suits your needs regarding complexity, performance, and error handling.  Always handle edge cases (such as malformed input) to prevent unexpected behavior or crashes in your program.
+</p></span></div><div class="lineFix"></div><div>Is there no other way to just simply iterate over the element in the array?</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>No, you can't directly iterate over the elements in the array as presented because  <code style="color: transparent; text-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px;">" [“OPEN”, “CLOSE”, “LOCK, “UNLOCK”]"</code> is <em>not</em> a C array.  It's a single string containing comma-separated substrings within brackets.  C doesn't have a built-in data structure that directly represents this format.</span>
+<span>To iterate, you must first <em>parse</em> that string into a suitable C data structure, such as an array of C strings (an array of <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">char*</code>).  The methods using <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">strtok</code> or manual parsing (discussed in the previous response) are the only way to achieve this. There's no shortcut to avoid the parsing step because the input is not already in a format that C can directly interpret as an array.  The parsing transforms the input <em>into</em> an array representation that allows simple iteration.</span>
+</div><div class="lineFix"></div>
+
+Code for task:
+
+
+
+Friction: mult_response 
+Time left: 0
+Chat for task:
+
+undefined<div>I want to make an expression parser that supports basic mathematical operations such as addition, subtraction and so on. The input is a string given by the user in the format of "2 + 4 * 4". The expression parser should tokenized the input into operands and operators and follow operations rules in mathematics.</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>You're asking for a fairly complex task!  A robust expression parser typically involves a recursive descent parser or a shunting-yard algorithm to handle operator precedence correctly.  Let's start with simpler approaches in C, progressing towards more robust solutions.  We'll avoid full-blown recursive descent for now to keep the examples manageable.</span>
+<p><strong>Method 1: Simple Parser (Handles only + and - without precedence)</strong></p>
+<p>This method only works for expressions with only addition and subtraction, and doesn't handle operator precedence (e.g., it will calculate 2 + 4 * 4 as 24 instead of 18).</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;ctype.h&gt;
+
+int main() {
+    char expression[100];
+    printf("Enter an expression (only + and -): ");
+    fgets(expression, sizeof(expression), stdin);
+    expression[strcspn(expression, "\n")] = 0; //remove trailing newline
+
+    int result = 0;
+    int operand = 0;
+    char operator = '+';
+
+    for (int i = 0; i &lt; strlen(expression); i++) {
+        if (isdigit(expression[i])) {
+            operand = operand * 10 + (expression[i] - '0');
+        } else if (expression[i] == '+' || expression[i] == '-') {
+            if (operator == '+') {
+                result += operand;
+            } else {
+                result -= operand;
+            }
+            operand = 0;
+            operator = expression[i];
+        }
+    }
+    if (operator == '+') {
+        result += operand;
+    } else {
+        result -= operand;
+    }
+
+    printf("Result: %d\n", result);
+    return 0;
+}
+</code></pre>
+<p><strong>Method 2:  Slightly Improved (Handles * and / with left-to-right associativity)</strong></p>
+<p>This version adds multiplication and division but still lacks full operator precedence.  It processes operations from left to right.</p>
+<pre><code class="language-c" style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;ctype.h&gt;
+
+int main() {
+    char expression[100];
+    printf("Enter an expression (+, -, *, /, left-to-right): ");
+    fgets(expression, sizeof(expression), stdin);
+    expression[strcspn(expression, "\n")] = 0;
+
+    double result = 0;
+    double operand = 0;
+    char operator = '+';
+
+    for (int i = 0; i &lt; strlen(expression); i++) {
+        if (isdigit(expression[i])) {
+            operand = operand * 10 + (expression[i] - '0');
+        } else if (expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/') {
+            if (operator == '+') {
+                result += operand;
+            } else if (operator == '-') {
+                result -= operand;
+            } else if (operator == '*') {
+                result *= operand;
+            } else if (operator == '/') {
+                if(operand == 0){
+                    printf("Division by zero!\n");
+                    return 1;
+                }
+                result /= operand;
+            }
+            operand = 0;
+            operator = expression[i];
+        }
+    }
+    if (operator == '+') {
+        result += operand;
+    } else if (operator == '-') {
+        result -= operand;
+    } else if (operator == '*') {
+        result *= operand;
+    } else if (operator == '/') {
+        if(operand == 0){
+            printf("Division by zero!\n");
+            return 1;
+        }
+        result /= operand;
+    }
+
+    printf("Result: %f\n", result);
+    return 0;
+}
+</code></pre>
+<p><strong>Method 3 (using a stack - more complex but handles precedence):</strong></p>
+<p>For a complete solution with operator precedence, you would need to implement the shunting-yard algorithm or a recursive descent parser.  These are significantly more complex and beyond the scope of a simple example here.  They involve using stacks to manage operators and operands.  Libraries like <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">flex</code> and <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">bison</code> are often used for building more sophisticated parsers in C.</p>
+<span>Remember that these examples have limitations.  They don't handle parentheses, whitespace consistently, or error checking very well.  A production-ready expression parser requires considerably more robust error handling and a more sophisticated parsing algorithm.  Let me know if you want to explore one of the more advanced parsing techniques!</span>
+</div><div class="lineFix"></div>
+
+Code for task:
+
+
+
+Friction: unfinish_code 
+Time left: 0
+Chat for task:
+
+undefined<div>Create a simple path-finding algorithm in c that finds the quickest path from one starting point to an endpoint in a grid.<br>If no path exists the program should notify of this<br><br>The program should receive the grid by user input in the form of a 2D array<br><br>An example could look like this [[2,1,1], [0, 1, 1],[0, 0,2]] where 2 represents the end and starting point, 1 represents a blocked path and 0 represents a traversable path<br><br>This specific example should then give us a minimum path of 4</div><div class="lineFix"></div><div style="color: rgb(74, 144, 226);"><span>This program uses a breadth-first search (BFS) algorithm to find the shortest path.  Remember to replace the <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">&lt;TYPE&gt;</code> placeholders with the appropriate data types.</span>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;queue&gt; //You will need to add this for queue functionality
+
+
+// Structure to represent a cell in the grid
+typedef struct {
+    int x;
+    int y;
+    int distance;
+} Cell;
+
+
+int main() {
+    int rows, cols;
+
+    printf("Enter the number of rows and columns: ");
+    scanf("%d %d", &amp;rows, &amp;cols);
+
+
+    //Dynamically allocate the grid
+    &lt;TYPE&gt; **grid = (&lt;TYPE&gt; **)malloc(rows * sizeof(&lt;TYPE&gt; *));
+    for (int i = 0; i &lt; rows; i++) {
+        grid[i] = (&lt;TYPE&gt; *)malloc(cols * sizeof(&lt;TYPE&gt;));
+    }
+
+
+    printf("Enter the grid elements (0 for traversable, 1 for blocked, 2 for start/end):\n");
+    int startX, startY, endX, endY;
+    bool startFound = false;
+    bool endFound = false;
+
+    for (int i = 0; i &lt; rows; i++) {
+        for (int j = 0; j &lt; cols; j++) {
+            scanf("%d", &amp;grid[i][j]);
+            if (grid[i][j] == 2 &amp;&amp; !startFound) {
+                startX = i;
+                startY = j;
+                startFound = true;
+            } else if (grid[i][j] == 2 &amp;&amp; startFound) {
+                endX = i;
+                endY = j;
+                endFound = true;
+            }
+        }
+    }
+    if (!startFound || !endFound) {
+        printf("Start or end point not found in the grid.\n");
+        return 1;
+    }
+
+
+    std::queue&lt;Cell&gt; q;
+    q.push({startX, startY, 0});
+
+    &lt;TYPE&gt; **visited = (&lt;TYPE&gt; **)malloc(rows * sizeof(&lt;TYPE&gt; *));
+    for (int i = 0; i &lt; rows; i++) {
+        visited[i] = (&lt;TYPE&gt; *)malloc(cols * sizeof(&lt;TYPE&gt;));
+        for (int j = 0; j &lt; cols; j++) {
+            visited[i][j] = 0; //Initialize visited array
+        }
+    }
+    visited[startX][startY] = 1;
+
+    int dx[] = {0, 0, 1, -1};
+    int dy[] = {1, -1, 0, 0};
+
+    while (!q.empty()) {
+        Cell current = q.front();
+        q.pop();
+
+        if (current.x == endX &amp;&amp; current.y == endY) {
+            printf("Shortest path length: %d\n", current.distance);
+            break;
+        }
+
+        for (int i = 0; i &lt; 4; i++) {
+            int nextX = current.x + dx[i];
+            int nextY = current.y + dy[i];
+
+            if (nextX &gt;= 0 &amp;&amp; nextX &lt; rows &amp;&amp; nextY &gt;= 0 &amp;&amp; nextY &lt; cols &amp;&amp;
+                grid[nextX][nextY] != 1 &amp;&amp; visited[nextX][nextY] == 0) {
+                q.push({nextX, nextY, current.distance + 1});
+                visited[nextX][nextY] = 1;
+            }
+        }
+    }
+
+    if (q.empty()) {
+        printf("No path found.\n");
+    }
+
+
+    //Free dynamically allocated memory
+    for (int i = 0; i &lt; rows; i++) {
+        free(grid[i]);
+        free(visited[i]);
+    }
+    free(grid);
+    free(visited);
+
+    return 0;
+}
+</code></pre>
+<span>Remember to compile with  <code>g++ -std=c++11 your_file_name.cpp -o your_executable_name</code> (or a similar command depending on your compiler and operating system) because this code uses C++'s <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">queue</code>.  If you want a purely C solution, you'll need to implement your own queue data structure.  Also, remember to replace <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">&lt;TYPE&gt;</code> with  <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">int</code> or <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">bool</code> as needed.  The <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">visited</code> array could be <code style="color: rgb(74, 144, 226); text-shadow: 0px 0px 0px;">bool</code> for efficiency.</span>
+</div><div class="lineFix"></div>
+
+Code for task:
+
+
 
