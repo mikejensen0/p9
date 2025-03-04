@@ -14,30 +14,30 @@ genai.configure(api_key=os.getenv("API_KEY", None))
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 base_behaviour = [
-            {"role": "user", "parts": "You are a coding assistant you specialize in supporting user write c code"},
-            {"role": "model", "parts": "Okay, I can do that"},
-        ]
+    {"role": "user", "parts": "You are a coding assistant you specialize in supporting user write c code"},
+    {"role": "model", "parts": "Okay, I can do that"},
+]
 
 mult_response = [
-            {"role": "user", "parts": "You are a coding assistant you specialize in supporting user write c code"},
-            {"role": "model", "parts": "Okay, I can do that"},
-            {"role": "user", "parts": "When the user asks you for code you will always provide more than one way to solve their question in c code"},
-            {"role": "model", "parts": "Okay, when the user asks for code i will provide several examples of how they can solve their question in c code"},
-            {"role": "user", "parts": "If request to use different coding language comply and then write the code in that langauge but after that go back to writing c code"},
-            {"role": "model", "parts": "Okay, when the user asks me to use a different coding language I will provide multiple examples of a solution in that langauge and then go back to writing c code"}
-        ]
+    {"role": "user", "parts": "You are a coding assistant you specialize in supporting user write c code"},
+    {"role": "model", "parts": "Okay, I can do that"},
+    {"role": "user", "parts": "When the user asks you for code you will always provide more than one way to solve their question in c code"},
+    {"role": "model", "parts": "Okay, when the user asks for code i will provide several examples of how they can solve their question in c code"},
+    {"role": "user", "parts": "If request to use different coding language comply and then write the code in that langauge but after that go back to writing c code"},
+    {"role": "model", "parts": "Okay, when the user asks me to use a different coding language I will provide multiple examples of a solution in that langauge and then go back to writing c code"}
+]
 unfinished_code = [
-            {"role": "user", "parts": "You are a coding assistant you specialize in supporting user c code"},
-            {"role": "model", "parts": "Okay, I can do that"},
-            {"role": "user", "parts": "When the user asks you for code provide a solution as normally but replace the variable types with a placeholder making it clear to the user they need to put in the type from understanding the way the code is used"},
-            {"role": "model", "parts": "Okay, when the user asks for code i will provide a solution in c like normal but leave a placeholder on the types to demonstrate to the user they need to fill out the types"},
-            {"role": "user", "parts": "If request to use different coding language comply and then write the code in that langauge but after that go back to writing c code"},
-            {"role": "model", "parts": "Okay, when the user asks me to use a different coding language I will provide a solution in that language while still putting type placeholders and then go back to writing c code"},
-            {"role": "user", "parts": "Do not give hints in your explanation what the type should be"},
-            {"role": "model", "parts": "Okay, i will not provide hints about what i think the type should be in my explanation"},
-            {"role": "model", "parts": "If asked what the type is tell them you cannot tell them what the type is and that they need to read the code and understand the type"},
-            {"role": "model", "parts": "Okay, when they ask what the type is ill tell them that they need to read the code and then understand what the type should be and i can not tell them what the type is"}
-        ]
+    {"role": "user", "parts": "You are a coding assistant you specialize in supporting user c code"},
+    {"role": "model", "parts": "Okay, I can do that"},
+    {"role": "user", "parts": "When the user asks you for code provide a solution as normally but replace the variable types with a placeholder making it clear to the user they need to put in the type from understanding the way the code is used"},
+    {"role": "model", "parts": "Okay, when the user asks for code i will provide a solution in c like normal but leave a placeholder on the types to demonstrate to the user they need to fill out the types"},
+    {"role": "user", "parts": "If request to use different coding language comply and then write the code in that langauge but after that go back to writing c code"},
+    {"role": "model", "parts": "Okay, when the user asks me to use a different coding language I will provide a solution in that language while still putting type placeholders and then go back to writing c code"},
+    {"role": "user", "parts": "Do not give hints in your explanation what the type should be"},
+    {"role": "model", "parts": "Okay, i will not provide hints about what i think the type should be in my explanation"},
+    {"role": "model", "parts": "If asked what the type is tell them you cannot tell them what the type is and that they need to read the code and understand the type"},
+    {"role": "model", "parts": "Okay, when they ask what the type is ill tell them that they need to read the code and then understand what the type should be and i can not tell them what the type is"}
+]
 chat = model.start_chat(
     history = base_behaviour
 )
@@ -121,10 +121,10 @@ def write_to_file():
     ai_chat = data.get('chatArray')
     active_friction = data.get('frictionArray')
     time_left = data.get('timeLeftArray')
-
-    with open('data/test1.txt', 'w') as file:
-        i = 0 
-        
+    shuffled_ids = data.get('taskIds')   
+         
+    with open('data/test7.txt', 'w') as file:
+        i = 0    
         while i < 4:
             if active_friction[i] == 0:
                 friction = "base"
@@ -136,6 +136,21 @@ def write_to_file():
                 friction = "unfinish_code"
             else:
                 raise Exception("friction not supported")
+            
+            if shuffled_ids[i] == 0:
+                chat_with_ai = ai_chat[0]
+                code_from_user = user_code[0]
+            elif shuffled_ids[i] == 1:
+                chat_with_ai = ai_chat[1]
+                code_from_user = user_code[1]
+            elif shuffled_ids[i] == 2:
+                chat_with_ai = ai_chat[2]
+                code_from_user = user_code[2]
+            elif shuffled_ids[i] == 3:
+                chat_with_ai = ai_chat[3]
+                code_from_user = user_code[3]
+            else:
+                raise Exception("shuffled_ids not between 0 and 3")
 
             file.write(f"Friction: {friction} \n")
             if time_left[i +1] <= 0:
@@ -143,9 +158,9 @@ def write_to_file():
             else:
                 file.write(f"Time left: {time_left[i+1]/1000}\n")
             file.write("Chat for task:\n\n")
-            file.write(f"{ai_chat[i]}\n\n")
+            file.write(f"{chat_with_ai}\n\n")
             file.write("Code for task:\n\n")
-            file.write(f"{user_code[i]}\n\n")
+            file.write(f"{code_from_user}\n\n")
             i += 1
     return jsonify({"message": "Wrote to file"})
 
